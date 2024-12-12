@@ -18,39 +18,41 @@ interface CustomAxiosRequestConfig extends AxiosRequestConfig {
   _retry?: boolean,
 }
 
-function handleError(message: string): Promise<never> {
-  alert(message)
+function handleError(): Promise<never> {
+  alert(MESSAGE.AUTH.RETRY_LOGIN)
   AuthUtility.logout()
-  window.location.href = "/"
-  return Promise.reject(new Error(message))
+  window.location.href = "/accountbook/auth/login"
+  return Promise.reject()
 }
 
 customApi.axiosInstance.interceptors.response.use(
   async (response: AxiosResponse): Promise<AxiosResponse> => {
-    if (response.data.resultCode === ApiResultCode.EXPIRED_ACCESS_TOKEN) {
-      try {
+    try {
+      if (response.data.resultCode === ApiResultCode.EXPIRED_ACCESS_TOKEN) {
         const config = response.config as CustomAxiosRequestConfig
         if (config._retry) {
-          return handleError(MESSAGE.AUTH.AUTHENTICATION_EXPIRED)
+          return handleError()
         }
 
         config._retry = true
         const refreshToken = AuthUtility.getRefreshToken()
         if (!refreshToken) {
-          return handleError(MESSAGE.AUTH.AUTHENTICATION_EXPIRED)
+          return handleError()
         }
 
         const refreshResponse = await AuthApi.refresh({ request: { refreshToken: refreshToken } })
         if (!refreshResponse.isSuccess() || !refreshResponse.data) {
-          return handleError(refreshResponse.message || MESSAGE.COMMON.REQUEST_FAIL)
+          return handleError()
         }
 
         AuthUtility.issueToken({ response: refreshResponse.data })
         return customApi.axiosInstance(config)
 
-      } catch (error) {
-        return handleError(MESSAGE.COMMON.REQUEST_FAIL)
+      } else if (response.data.resultCode === ApiResultCode.INVALID_TOKEN) {
+        return handleError()
       }
+    } catch (error) {
+      return handleError()
     }
 
     return response

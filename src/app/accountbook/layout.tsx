@@ -23,11 +23,36 @@ export default function RootLayout({
       <body>
         <QueryProvider>
           <AuthProvider>
-            <Link href={"/accountbook"}>
-              accountbook
-            </Link>
-            <AccountBookNavigation />
-            {children}
+            <div
+              style={{
+                maxWidth: "600px",
+                margin: "0 auto",
+              }}
+            >
+              <header
+                style={{
+                  position: "sticky",
+                  top: 0,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  height: "50px",
+                  padding: "0 20px",
+                  background: "white",
+                }}
+              >
+                <Link href={"/accountbook"}>
+                  HOME
+                </Link>
+                <Link href={"/accountbook/mypage"}>
+                  MY
+                </Link>
+              </header>
+              <div>
+                {children}
+              </div>
+              <AccountBookNavigation />
+            </div>
             <LoadSpinner />
             <ReactQueryDevtools />
           </AuthProvider>

@@ -24,16 +24,8 @@ export class ApiResponse<D = null> {
   }
 }
 
-export class ApiSliceResponse<E> extends ApiResponse<{ pageSize: number, list: E[] }> {
-  constructor({
-    resultCode,
-    message,
-    data,
-  }: {
-    resultCode: string,
-    message?: string,
-    data: { pageSize: number, list: E[] },
-  }) {
-    super({ resultCode, message, data })
-  }
+export interface SliceResponseData<E> {
+  content: E[],
+  pageSize: number,
+  hasNext: boolean,
 }

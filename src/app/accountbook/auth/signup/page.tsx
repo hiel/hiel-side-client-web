@@ -7,7 +7,7 @@ import { MESSAGE } from "@/common/domains/Messages"
 import { useMutation } from "@tanstack/react-query"
 import { USER_PASSWORD_MINIMUM_LENGTH, USERNAME_MINIMUM_LENGTH } from "@/common/domains/UserDomains"
 
-export default function Signup() {
+export default function AccountBookSignup() {
   const router = useRouter()
   const [ formData, setFormData ] = useState<{
     email: string,

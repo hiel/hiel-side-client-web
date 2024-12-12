@@ -6,7 +6,7 @@ import { MESSAGE } from "@/common/domains/Messages"
 import { useMutation } from "@tanstack/react-query"
 import { useEffect } from "react"
 
-export default function SignupCertificate() {
+export default function AccountBookSignupCertificate() {
   const router = useRouter()
   const token = useSearchParams().get("token")
 

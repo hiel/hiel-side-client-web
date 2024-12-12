@@ -7,7 +7,7 @@ import { UserApi } from "@/accountbook/apis/user/UserApi"
 import { useRouter } from "next/navigation"
 import { useMutation } from "@tanstack/react-query"
 
-export default function ChangePassword() {
+export default function AccountBookChangePassword() {
   const router = useRouter()
   const [ formData, setFormData ] = useState<{
     currentPassword: string,

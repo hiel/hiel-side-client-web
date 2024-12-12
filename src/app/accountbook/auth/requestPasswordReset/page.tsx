@@ -7,7 +7,7 @@ import { MESSAGE } from "@/common/domains/Messages"
 import { useRouter } from "next/navigation"
 import { useMutation } from "@tanstack/react-query"
 
-export default function RequestPasswordReset() {
+export default function AccountBookRequestPasswordReset() {
   const router = useRouter()
   const [ formData, setFormData ] = useState<RequestPasswordResetRequest>({
     email: "",

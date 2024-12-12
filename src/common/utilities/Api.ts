@@ -1,5 +1,5 @@
 import axios, { AxiosInstance, AxiosResponse } from "axios"
-import { ApiResponse, ApiSliceResponse } from "@/common/apis/ApiDomains"
+import { ApiResponse } from "@/common/apis/ApiDomains"
 import { DateTimeUtility } from "@/common/utilities/DateTimeUtility"
 
 export class Api {
@@ -25,32 +25,12 @@ export class Api {
       queryParams = {},
     }: {
       url: string,
-      queryParams?: Record<string, number | string>,
+      queryParams?: Record<string, number | string | Date>,
     }): Promise<ApiResponse<T>> {
     return await this.request<T>({
       method: "GET",
       url: url,
       queryParams: queryParams,
-    })
-  }
-
-  async getSlice<T>(
-    {
-      url,
-      queryParams = {},
-    }: {
-      url: string,
-      queryParams?: Record<string, number | string>,
-    }): Promise<ApiSliceResponse<T>> {
-    const response = await this.request<T>({
-      method: "GET",
-      url: url,
-      queryParams: queryParams,
-    })
-    return new ApiSliceResponse({
-      resultCode: response.resultCode,
-      message: response.message,
-      data: response.data as { pageSize: number; list: T[] },
     })
   }
 
@@ -62,8 +42,8 @@ export class Api {
       files = undefined,
     }: {
       url: string,
-      queryParams?: Record<string, number | string>,
-      requestBody?: Record<string, number | string>,
+      queryParams?: Record<string, number | string | Date>,
+      requestBody?: Record<string, number | string | Date>,
       files?: Record<string, File>,
     }): Promise<ApiResponse<T>> {
     return await this.request<T>({
@@ -83,8 +63,8 @@ export class Api {
       files = undefined,
     }: {
       url: string,
-      queryParams?: Record<string, number | string>,
-      requestBody?: Record<string, number | string>,
+      queryParams?: Record<string, number | string | Date>,
+      requestBody?: Record<string, number | string | Date>,
       files?: Record<string, File>,
     }): Promise<ApiResponse<T>> {
     return await this.request<T>({
@@ -103,8 +83,8 @@ export class Api {
       requestBody = {},
     }: {
       url: string,
-      queryParams?: Record<string, number | string>,
-      requestBody?: Record<string, number | string>,
+      queryParams?: Record<string, number | string | Date>,
+      requestBody?: Record<string, number | string | Date>,
     }): Promise<ApiResponse<T>> {
     return await this.request<T>({
       method: "DELETE",
@@ -124,8 +104,8 @@ export class Api {
     }: {
       method: string,
       url: string,
-      queryParams?: Record<string, number | string>,
-      requestBody?: Record<string, number | string>,
+      queryParams?: Record<string, number | string | Date>,
+      requestBody?: Record<string, number | string | Date>,
       files?: Record<string, File>,
     }): Promise<ApiResponse<T>> {
     let formData: FormData | undefined

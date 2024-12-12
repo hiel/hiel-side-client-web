@@ -1,4 +1,4 @@
-import { customApi } from "@/common/apis/CustomApi"
+import { customApi } from "@/accountbook/apis/CustomApi"
 import { ApiResponse } from "@/common/apis/ApiDomains"
 import {
   CertificateSignupRequest,

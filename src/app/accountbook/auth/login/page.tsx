@@ -9,7 +9,7 @@ import { AuthUtility } from "@/common/utilities/AuthUtility"
 import { useMutation } from "@tanstack/react-query"
 import AuthStore from "@/common/stores/AuthStore"
 
-export default function Login() {
+export default function AccountBookLogin() {
   const router = useRouter()
   const [ formData, setFormData ] = useState<LoginRequest>({
     email: "",

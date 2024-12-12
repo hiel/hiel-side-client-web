@@ -6,7 +6,7 @@ import { AuthApi } from "@/accountbook/apis/auth/AuthApi"
 import { useMutation } from "@tanstack/react-query"
 import { useState } from "react"
 
-export default function ResetPassword() {
+export default function AccountBookResetPassword() {
   const router = useRouter()
   const token = useSearchParams().get("token")
   const [password, setPassword] = useState<string>("")
