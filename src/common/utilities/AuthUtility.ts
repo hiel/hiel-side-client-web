@@ -3,20 +3,21 @@ import { BrowserStorageUtility, CookieKey } from "@/common/utilities/BrowserStor
 import { ValidationUtility } from "@/common/utilities/ValidationUtility"
 import { UserType, UserTypeExternal } from "@/common/domains/UserDomains"
 
-export const AuthUtility = {
-  issueToken: ({
+export class AuthUtility {
+  static issueToken({
     response,
   }: {
     response: IssueTokenResponse,
-  }): void => {
+  }): void {
     BrowserStorageUtility.setCookie({ key: CookieKey.ACCESS_TOKEN, value: response.accessToken })
     BrowserStorageUtility.setCookie({ key: CookieKey.REFRESH_TOKEN, value: response.refreshToken })
     BrowserStorageUtility.setCookie({ key: CookieKey.USER_ID, value: String(response.id) })
     BrowserStorageUtility.setCookie({ key: CookieKey.USER_EMAIL, value: response.email })
     BrowserStorageUtility.setCookie({ key: CookieKey.USER_NAME, value: response.name })
     BrowserStorageUtility.setCookie({ key: CookieKey.USER_TYPE, value: response.userType })
-  },
-  logout: () => {
+  }
+
+  static logout() {
     BrowserStorageUtility.removeCookies({ keys: [
       CookieKey.ACCESS_TOKEN,
       CookieKey.REFRESH_TOKEN,
@@ -25,39 +26,49 @@ export const AuthUtility = {
       CookieKey.USER_NAME,
       CookieKey.USER_TYPE,
     ] })
-  },
-  getAccessToken: (): string | null => {
+  }
+
+  static getAccessToken(): string | null {
     return BrowserStorageUtility.getCookie({ key: CookieKey.ACCESS_TOKEN })
-  },
-  getRefreshToken: (): string | null => {
+  }
+
+  static getRefreshToken(): string | null {
     return BrowserStorageUtility.getCookie({ key: CookieKey.REFRESH_TOKEN })
-  },
-  getUserId: (): number | null => {
+  }
+
+  static getUserId(): number | null {
     const userId = BrowserStorageUtility.getCookie({ key: CookieKey.USER_ID })
     return userId === null ? null : Number(userId)
-  },
-  getUserType: (): string | null => {
+  }
+
+  static getUserType(): string | null {
     return BrowserStorageUtility.getCookie({ key: CookieKey.USER_TYPE })
-  },
-  getUserTypeExternal: (): { type: UserType, name: string, containTypes: UserType[] } | null => {
+  }
+
+  static getUserTypeExternal(): { type: UserType, name: string, containTypes: UserType[] } | null {
     if (AuthUtility.getUserType() === null) {
       return null
     }
     return UserTypeExternal[AuthUtility.getUserType() as keyof typeof UserTypeExternal]
-  },
-  hasRole: (userType: UserType): boolean => {
+  }
+
+  static hasRole(userType: UserType): boolean {
     return AuthUtility.getUserTypeExternal() !== null && AuthUtility.getUserTypeExternal()!.containTypes.includes(userType)
-  },
-  hasMasterRole: (): boolean => {
+  }
+
+  static hasMasterRole(): boolean {
     return AuthUtility.hasRole(UserType.MASTER)
-  },
-  hasAdminRole: (): boolean => {
+  }
+
+  static hasAdminRole(): boolean {
     return AuthUtility.hasRole(UserType.ADMIN)
-  },
-  hasUserRole: (): boolean => {
+  }
+
+  static hasUserRole(): boolean {
     return AuthUtility.hasRole(UserType.USER)
-  },
-  isLogin: (): boolean => {
+  }
+
+  static isLogin(): boolean {
     return ValidationUtility.hasValue(AuthUtility.getAccessToken()) && ValidationUtility.hasValue(AuthUtility.getRefreshToken())
-  },
+  }
 }

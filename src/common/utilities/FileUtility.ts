@@ -1,18 +1,19 @@
 const BINARY_UNIT_MULTIPLIER = 1024
 
-export const FileUtility = {
-  kiloByteToByte: ({
+export class FileUtility {
+  static kiloByteToByte({
     kiloByte,
   }: {
     kiloByte: number,
-  }): number => {
+  }): number {
     return kiloByte * BINARY_UNIT_MULTIPLIER
-  },
-  megaByteToByte: ({
+  }
+
+  static megaByteToByte({
     megaByte,
   }: {
     megaByte: number,
-  }): number => {
+  }): number {
     return FileUtility.kiloByteToByte({ kiloByte: megaByte }) * BINARY_UNIT_MULTIPLIER
-  },
+  }
 }

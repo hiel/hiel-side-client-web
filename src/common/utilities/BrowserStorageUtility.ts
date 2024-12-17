@@ -12,65 +12,72 @@ export enum CookieKey {
 // export enum LocalStorageKey {
 // }
 
-export const BrowserStorageUtility = {
-  setCookie: ({
+export class BrowserStorageUtility {
+  static setCookie({
     key,
     value,
   }: {
     key: CookieKey,
     value: string,
-  }): void => {
+  }): void {
     new Cookies().set(key, value, { path: "/" })
-  },
-  getCookie: ({
+  }
+
+  static getCookie({
     key,
   }: {
     key: CookieKey,
-  }): string => {
+  }): string {
     return new Cookies().get(key)
-  },
-  removeCookie: ({
+  }
+
+  static removeCookie({
     key,
   }: {
     key: CookieKey,
-  }) => {
+  }) {
     new Cookies().remove(key, { path: "/" })
-  },
-  removeCookies: ({
+  }
+
+  static removeCookies({
     keys,
   }: {
     keys: CookieKey[],
-  }): void => {
+  }): void {
     keys.forEach(key => BrowserStorageUtility.removeCookie({ key: key }))
-  },
-  // setLocalStorage: ({
+  }
+
+  // static setLocalStorage({
   //   key,
   //   value,
   // }: {
   //   key: LocalStorageKey,
   //   value: string,
-  // }): void => {
+  // }): void {
   //   localStorage.setItem(key, value)
-  // },
-  // getLocalStorage: ({
+  // }
+  //
+  // static getLocalStorage({
   //   key,
   // }: {
   //   key: LocalStorageKey,
-  // }): string | null => {
+  // }): string | null {
   //   return localStorage.getItem(key)
-  // },
-  // removeLocalStorage: ({
+  // }
+  //
+  // static removeLocalStorage({
   //   key,
   // }: {
   //   key: LocalStorageKey,
-  // }): void => {
+  // }): void {
   //   localStorage.removeItem(key)
-  // },
-  // removeLocalStorages: ({
+  // }
+  //
+  // static removeLocalStorages({
   //   keys,
   // }: {
   //   keys: LocalStorageKey[],
-  // }): void => {
+  // }): void{
   //   keys.forEach(key => localStorage.removeItem(key))
-  // },
+  // }
 }

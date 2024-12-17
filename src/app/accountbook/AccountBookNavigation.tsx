@@ -3,20 +3,20 @@
 import Link from "next/link"
 import styled from "styled-components"
 
-export default function AccountBookNavigation() {
-  const NavItem = styled.li`
-    display: flex;
-    flex: 1;
-    color: aliceblue;
-  `
-  const NavItemLink = styled(Link)`
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    font-weight: 600;
-  `
+const NavItem = styled.li`
+  display: flex;
+  flex: 1;
+  color: aliceblue;
+`
+const NavItemLink = styled(Link)`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  font-weight: 600;
+`
 
+export default function AccountBookNavigation() {
   return (
     <nav
       style={{
@@ -36,12 +36,12 @@ export default function AccountBookNavigation() {
       >
         <NavItem>
           <NavItemLink href={"/accountbook"}>
-            HOME
+            홈
           </NavItemLink>
         </NavItem>
         <NavItem>
-          <NavItemLink href={"/accountbook"}>
-            추가
+          <NavItemLink href={"/accountbook/transactions/register"}>
+            등록
           </NavItemLink>
         </NavItem>
         <NavItem>

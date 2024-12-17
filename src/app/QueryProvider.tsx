@@ -10,6 +10,7 @@ export default function QueryProvider ({ children }: { children: ReactNode }): R
       queries: {
         gcTime: 0,
         staleTime: 0,
+        // enabled: false,
         refetchOnWindowFocus: false,
         refetchOnReconnect: false,
         refetchOnMount: false,

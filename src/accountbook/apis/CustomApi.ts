@@ -4,6 +4,7 @@ import { ApiResultCode } from "@/common/apis/ApiResultCode"
 import { AuthApi } from "@/accountbook/apis/auth/AuthApi"
 import { MESSAGE } from "@/common/domains/Messages"
 import { AxiosRequestConfig, AxiosResponse } from "axios"
+import { IssueTokenResponse } from "@/accountbook/apis/auth/AuthApiDomains"
 
 export const customApi = new Api({ url: process.env.NEXT_PUBLIC_API_URL!, timeoutSecond: 10 })
 
@@ -41,11 +42,11 @@ customApi.axiosInstance.interceptors.response.use(
         }
 
         const refreshResponse = await AuthApi.refresh({ request: { refreshToken: refreshToken } })
-        if (!refreshResponse.isSuccess() || !refreshResponse.data) {
+        if (!refreshResponse.isSuccessAndHasData()) {
           return handleError()
         }
 
-        AuthUtility.issueToken({ response: refreshResponse.data })
+        AuthUtility.issueToken({ response: refreshResponse.data as IssueTokenResponse })
         return customApi.axiosInstance(config)
 
       } else if (response.data.resultCode === ApiResultCode.INVALID_TOKEN) {

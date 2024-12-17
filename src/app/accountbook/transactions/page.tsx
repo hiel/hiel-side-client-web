@@ -6,10 +6,10 @@ import { TransactionApi } from "@/accountbook/apis/transaction/TransactionApi"
 import InfiniteScroll from "react-infinite-scroll-component"
 import Link from "next/link"
 import dayjs from "dayjs"
-import { DateTimeUtility } from "@/common/utilities/DateTimeUtility"
 import styled from "styled-components"
 import { IncomeExpenseType } from "@/accountbook/domains/IncomeExpenseType"
 import { QueryUtility } from "@/common/utilities/QueryUtility"
+import { TransactionGetSliceResponse } from "@/accountbook/apis/transaction/TransactionApiDomains"
 
 export default function Transactions() {
   const yearMonth = useSearchParams().get("yearMonth")
@@ -28,11 +28,11 @@ export default function Transactions() {
           ...(yearMonth !== null && { transactionDateTime: new Date(yearMonth) }),
         },
       })
-      if (!response.isSuccess() || !response.data) {
+      if (!response.isSuccessAndHasData()) {
         alert(response.message)
         return
       }
-      return response.data
+      return response.data as TransactionGetSliceResponse
     },
     initialPageParam: 1,
     getNextPageParam: (lastPage, allPages) => {
@@ -49,8 +49,8 @@ export default function Transactions() {
   }: {
     month: number,
   }) => {
-    return DateTimeUtility.initializeTime({ datetime: dayjs() }).add(month, "month").date(1)
-      .isAfter(DateTimeUtility.initializeTime({ datetime: getYearMonth() }).date(1))
+    return dayjs().add(month, "month").startOf("month")
+      .isAfter(dayjs().startOf("month"))
   }
 
   const TransactionText = styled.span`

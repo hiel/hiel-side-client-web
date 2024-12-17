@@ -1,6 +1,16 @@
 import { SliceResponseData } from "@/common/apis/ApiDomains"
 import { IncomeExpenseType } from "@/accountbook/domains/IncomeExpenseType"
 
+export interface TransactionRegisterRequest {
+  title: string,
+  price: number,
+  transactionDate: Date,
+  budgetCategoryId: number,
+  transactionCategoryId: number,
+  incomeExpenseType: IncomeExpenseType,
+  isWaste: boolean,
+}
+
 export interface TransactionGetSliceRequest {
   page: number,
   pageSize: number,
