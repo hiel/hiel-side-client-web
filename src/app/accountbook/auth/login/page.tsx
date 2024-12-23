@@ -37,13 +37,13 @@ export default function AccountBookLogin() {
   }
 
   const loginMutation = useMutation({
-    mutationFn: () => AuthApi.login({ request: formData }),
+    mutationFn: () => AuthApi.login(formData),
     onSuccess: (data) => {
       if (!data.isSuccess() || !data.data) {
         alert(data.message)
         return
       }
-      AuthUtility.issueToken({ response: data.data })
+      AuthUtility.issueToken(data.data)
       setIsLogined(true)
       router.push("/accountbook/")
     },

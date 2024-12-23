@@ -10,6 +10,20 @@ import styled from "styled-components"
 import { IncomeExpenseType } from "@/accountbook/domains/IncomeExpenseType"
 import { QueryUtility } from "@/common/utilities/QueryUtility"
 import { TransactionGetSliceResponse } from "@/accountbook/apis/transaction/TransactionApiDomains"
+import _ from "lodash"
+
+const TransactionText = styled.span`
+  display: inline-flex;
+  align-items: baseline;
+  font-size: 15px;
+  font-weight: 500;
+`
+const TransactionSubText = styled.span`
+  display: inline-flex;
+  flex: 1;
+  font-size: 13px;
+  color: #A8A8A8;
+`
 
 export default function Transactions() {
   const yearMonth = useSearchParams().get("yearMonth")
@@ -22,11 +36,9 @@ export default function Transactions() {
     queryKey: ["TransactionApi.getSlice", yearMonth],
     queryFn: async ({ pageParam }) => {
       const response = await TransactionApi.getSlice({
-        request: {
-          page: pageParam,
-          pageSize: 30,
-          ...(yearMonth !== null && { transactionDateTime: new Date(yearMonth) }),
-        },
+        page: pageParam,
+        pageSize: 30,
+        ...(yearMonth !== null && { transactionDateTime: new Date(yearMonth) }),
       })
       if (!response.isSuccessAndHasData()) {
         alert(response.message)
@@ -44,31 +56,13 @@ export default function Transactions() {
     return dayjs(transactions!.pages[0]!.transactionDatetime)
   }
 
-  const isFutureAfter = ({
-    month,
-  }: {
-    month: number,
-  }) => {
-    return dayjs().add(month, "month").startOf("month")
-      .isAfter(dayjs().startOf("month"))
+  const isFutureAfterMonth = (month: number) => {
+    return dayjs(getYearMonth()).subtract(month, "month").startOf("month").isBefore(dayjs().startOf("month"))
   }
-
-  const TransactionText = styled.span`
-    display: inline-flex;
-    align-items: baseline;
-    font-size: 15px;
-    font-weight: 500;
-  `
-  const TransactionSubText = styled.span`
-    display: inline-flex;
-    flex: 1;
-    font-size: 13px;
-    color: #A8A8A8;
-  `
 
   return (
     <main>
-      { transactions && QueryUtility.isInfiniteLoaded({ data: transactions }) && ( <>
+      { transactions && QueryUtility.isInfiniteLoaded(transactions) && ( <>
         <div
           style={{
             position: "sticky",
@@ -83,7 +77,7 @@ export default function Transactions() {
           }}
         >
           <Link
-            href={`/accountbook/transactions?yearMonth=${getYearMonth().add(-1, "month").format("YYYY-MM")}`}
+            href={`/accountbook/transaction?yearMonth=${getYearMonth().add(-1, "month").format("YYYY-MM")}`}
             style={{
               textAlign: "left",
             }}
@@ -98,9 +92,9 @@ export default function Transactions() {
           >
             {dayjs(transactions.pages[0]!.transactionDatetime).format("YY년 MM월")}
           </h1>
-          { isFutureAfter({ month: 1 }) ? (
+          { isFutureAfterMonth(1) ? (
             <Link
-              href={`/accountbook/transactions?yearMonth=${getYearMonth().add(1, "month").format("YYYY-MM")}`}
+              href={`/accountbook/transaction?yearMonth=${getYearMonth().add(1, "month").format("YYYY-MM")}`}
               style={{
                 textAlign: "right",
               }}
@@ -116,13 +110,13 @@ export default function Transactions() {
             dataLength={transactions.pages.length}
             loader={<></>}
           >
-            { transactions.pages.map(page => page && (
-              page.slice.content.map((transaction, index) => (
+            { _.map(transactions.pages, page => page && (
+              _.map(page.slice.content, (transaction, index) => (
                 <li
                   style={{
                     marginBottom: "5px",
                     padding: "5px",
-                    borderBottom: "1px #D6D6D6 solid",
+                    borderBottom: index < page.slice.content.length - 1 ? "1px #D6D6D6 solid" : "none",
                   }}
                   key={index}
                 >

@@ -40,12 +40,12 @@ export default function AccountBookNavigation() {
           </NavItemLink>
         </NavItem>
         <NavItem>
-          <NavItemLink href={"/accountbook/transactions/register"}>
+          <NavItemLink href={"/accountbook/transaction/register"}>
             등록
           </NavItemLink>
         </NavItem>
         <NavItem>
-          <NavItemLink href={"/accountbook/transactions"}>
+          <NavItemLink href={"/accountbook/transaction"}>
             내역
           </NavItemLink>
         </NavItem>

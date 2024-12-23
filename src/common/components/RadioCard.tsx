@@ -1,6 +1,7 @@
 import { Control, Controller, FieldValues, Path } from "react-hook-form"
 import { RadioCardItem, RadioCardRoot } from "@/components/ui/radio-card"
-import { HStack } from "@chakra-ui/react"
+import { Group } from "@chakra-ui/react"
+import _ from "lodash"
 
 export default function RadioCard<T extends FieldValues>({
   name,
@@ -12,6 +13,7 @@ export default function RadioCard<T extends FieldValues>({
   items: {
     label: string | number,
     value: string,
+    styles?: object,
   }[],
   control: Control<T>,
   orientation?: "vertical" | "horizontal",
@@ -28,16 +30,17 @@ export default function RadioCard<T extends FieldValues>({
           align="center"
           orientation={orientation}
         >
-          <HStack align="stretch">
-            {items.map((item) => (
+          <Group align="stretch">
+            {_.map(items, item => (
               <RadioCardItem
                 label={item.label}
                 key={item.value}
                 value={item.value}
                 indicator={false}
+                style={item.styles}
               />
             ))}
-          </HStack>
+          </Group>
         </RadioCardRoot>
       )}
     />

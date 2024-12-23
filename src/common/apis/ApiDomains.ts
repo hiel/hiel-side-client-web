@@ -6,15 +6,7 @@ export class ApiResponse<D = null> {
   public message?: string
   public data?: D
 
-  constructor({
-    resultCode,
-    message,
-    data,
-  }: {
-    resultCode: string,
-    message?: string,
-    data?: D,
-  }) {
+  constructor({ resultCode, message, data }: { resultCode: string, message?: string, data?: D }) {
     this.resultCode = resultCode
     this.message = message
     this.data = data

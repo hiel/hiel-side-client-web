@@ -1,32 +1,28 @@
 import axios, { AxiosInstance, AxiosResponse } from "axios"
 import { ApiResponse } from "@/common/apis/ApiDomains"
-import { DateTimeUtility } from "@/common/utilities/DateTimeUtility"
+import { DATETIME_FORMAT, DateTimeUtility } from "@/common/utilities/DateTimeUtility"
+import _ from "lodash"
+import dayjs from "dayjs"
+
+type RequestDataType = number | string | boolean | Date
+type RequestDataRecordType = Record<string, RequestDataType>
+
+const _convertData = (data: RequestDataType): string => {
+  return (data instanceof Date) ?
+    DateTimeUtility.toString({ dayjs: dayjs(data), format: DATETIME_FORMAT.DATETIME_TIMEZONE }) : data.toString()
+}
 
 export class Api {
   readonly axiosInstance: AxiosInstance
 
-  constructor(
-    {
-      url,
-      timeoutSecond,
-    }: {
-      url: string,
-      timeoutSecond: number,
-    }) {
+  constructor({ url, timeoutSecond }: { url: string, timeoutSecond: number }) {
     this.axiosInstance = axios.create({
       baseURL: url,
-      timeout: DateTimeUtility.secondToMillisecond({ second: timeoutSecond }),
+      timeout: DateTimeUtility.secondToMillisecond(timeoutSecond),
     })
   }
 
-  async get<T>(
-    {
-      url,
-      queryParams = {},
-    }: {
-      url: string,
-      queryParams?: Record<string, number | string | Date>,
-    }): Promise<ApiResponse<T>> {
+  async get<T>({ url, queryParams = {} }: { url: string, queryParams?: RequestDataRecordType }): Promise<ApiResponse<T>> {
     return await this.request<T>({
       method: "GET",
       url: url,
@@ -42,8 +38,8 @@ export class Api {
       files = undefined,
     }: {
       url: string,
-      queryParams?: Record<string, number | string | Date>,
-      requestBody?: Record<string, number | string | Date>,
+      queryParams?: RequestDataRecordType,
+      requestBody?: RequestDataRecordType,
       files?: Record<string, File>,
     }): Promise<ApiResponse<T>> {
     return await this.request<T>({
@@ -63,8 +59,8 @@ export class Api {
       files = undefined,
     }: {
       url: string,
-      queryParams?: Record<string, number | string | Date>,
-      requestBody?: Record<string, number | string | Date>,
+      queryParams?: RequestDataRecordType,
+      requestBody?: RequestDataRecordType,
       files?: Record<string, File>,
     }): Promise<ApiResponse<T>> {
     return await this.request<T>({
@@ -83,8 +79,8 @@ export class Api {
       requestBody = {},
     }: {
       url: string,
-      queryParams?: Record<string, number | string | Date>,
-      requestBody?: Record<string, number | string | Date>,
+      queryParams?: RequestDataRecordType,
+      requestBody?: RequestDataRecordType,
     }): Promise<ApiResponse<T>> {
     return await this.request<T>({
       method: "DELETE",
@@ -104,17 +100,32 @@ export class Api {
     }: {
       method: string,
       url: string,
-      queryParams?: Record<string, number | string | Date>,
-      requestBody?: Record<string, number | string | Date>,
+      queryParams?: RequestDataRecordType,
+      requestBody?: RequestDataRecordType,
       files?: Record<string, File>,
     }): Promise<ApiResponse<T>> {
+    if (requestBody && files) {
+      Object.keys(requestBody).forEach(key => {
+        if (Object.keys(files).includes(key)) {
+          throw new Error("Duplicated key")
+        }
+      })
+    }
+
+    if (queryParams) {
+      queryParams = _.reduce(queryParams, (result, value, key) => {
+        result[key] = _convertData(value)
+        return result
+      }, {} as RequestDataRecordType)
+    }
+
     let formData: FormData | undefined
     if (requestBody || files) {
       formData = new FormData()
     }
     if (requestBody) {
       Object.entries(requestBody).forEach(([key, value]) => {
-        formData!.append(key, value.toString())
+        formData!.append(key, _convertData(value))
       })
     }
     if (files) {
@@ -128,10 +139,9 @@ export class Api {
       url: url,
       params: queryParams,
       data: formData,
-      headers: {
-        "Content-Type": files ? "multipart/form-data" : "application/json; charset=utf-8",
-      },
+      headers: { "Content-Type": files ? "multipart/form-data" : "application/json; charset=utf-8" },
     })
+
     return new ApiResponse<T>({
       resultCode: axiosResponse.data.resultCode,
       message: axiosResponse.data.message,

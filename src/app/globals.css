@@ -4,7 +4,6 @@
 
 .react-datepicker-wrapper {
   display: block !important;
-  width: 110px !important;
   padding: 10px 13px !important;
   color: #27272a !important; /* --chakra-colors-gray-focus-ring */
   font-size: 0.875rem !important; /* --chakra-font-sizes-sm */

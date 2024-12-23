@@ -40,10 +40,8 @@ export default function AccountBookChangePassword() {
 
   const changePasswordMutation = useMutation({
     mutationFn: () => UserApi.changePassword({
-      request: {
-        currentPassword: formData.currentPassword,
-        updatePassword: formData.updatePassword,
-      },
+      currentPassword: formData.currentPassword,
+      updatePassword: formData.updatePassword,
     }),
     onSuccess: (data) => {
       if (!data.isSuccess()) {

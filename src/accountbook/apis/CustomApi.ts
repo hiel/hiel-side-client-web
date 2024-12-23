@@ -41,12 +41,12 @@ customApi.axiosInstance.interceptors.response.use(
           return handleError()
         }
 
-        const refreshResponse = await AuthApi.refresh({ request: { refreshToken: refreshToken } })
+        const refreshResponse = await AuthApi.refresh({ refreshToken: refreshToken })
         if (!refreshResponse.isSuccessAndHasData()) {
           return handleError()
         }
 
-        AuthUtility.issueToken({ response: refreshResponse.data as IssueTokenResponse })
+        AuthUtility.issueToken(refreshResponse.data as IssueTokenResponse)
         return customApi.axiosInstance(config)
 
       } else if (response.data.resultCode === ApiResultCode.INVALID_TOKEN) {

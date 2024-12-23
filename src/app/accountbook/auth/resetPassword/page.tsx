@@ -13,7 +13,7 @@ export default function AccountBookResetPassword() {
 
   const resetPasswordMutation = useMutation({
     mutationFn: (resetPasswordToken: string) =>
-      AuthApi.resetPassword({ request: { resetPasswordToken: resetPasswordToken } }),
+      AuthApi.resetPassword({ resetPasswordToken: resetPasswordToken }),
     onSuccess: (data) => {
       if (!data.isSuccess() || !data.data) {
         alert(data.message)

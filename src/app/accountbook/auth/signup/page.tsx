@@ -50,11 +50,9 @@ export default function AccountBookSignup() {
 
   const signupMutation = useMutation({
     mutationFn: () => AuthApi.signup({
-      request: {
-        email: formData.email,
-        password: formData.password,
-        username: formData.username,
-      },
+      email: formData.email,
+      password: formData.password,
+      username: formData.username,
     }),
     onSuccess: (data) => {
       if (!data.isSuccess()) {

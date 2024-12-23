@@ -11,7 +11,7 @@ export default function AccountBookSignupCertificate() {
   const token = useSearchParams().get("token")
 
   const certificateSignupMutation = useMutation({
-    mutationFn: (signupToken: string) => AuthApi.certificateSignup({ request: { signupToken: signupToken } }),
+    mutationFn: (signupToken: string) => AuthApi.certificateSignup({ signupToken: signupToken }),
     onSuccess: (data) => {
       if (!data.isSuccess()) {
         alert(data.message)

@@ -29,7 +29,7 @@ export default function AccountBookRequestPasswordReset() {
   }
 
   const requestPasswordResetMutation = useMutation({
-    mutationFn: () => AuthApi.requestPasswordReset({ request: formData }),
+    mutationFn: () => AuthApi.requestPasswordReset(formData),
     onSuccess: (data) => {
       if (!data.isSuccess()) {
         alert(data.message)

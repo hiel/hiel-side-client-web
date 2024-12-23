@@ -4,11 +4,7 @@ import { ValidationUtility } from "@/common/utilities/ValidationUtility"
 import { UserType, UserTypeExternal } from "@/common/domains/UserDomains"
 
 export class AuthUtility {
-  static issueToken({
-    response,
-  }: {
-    response: IssueTokenResponse,
-  }): void {
+  static issueToken(response: IssueTokenResponse): void {
     BrowserStorageUtility.setCookie({ key: CookieKey.ACCESS_TOKEN, value: response.accessToken })
     BrowserStorageUtility.setCookie({ key: CookieKey.REFRESH_TOKEN, value: response.refreshToken })
     BrowserStorageUtility.setCookie({ key: CookieKey.USER_ID, value: String(response.id) })
@@ -18,31 +14,26 @@ export class AuthUtility {
   }
 
   static logout() {
-    BrowserStorageUtility.removeCookies({ keys: [
-      CookieKey.ACCESS_TOKEN,
-      CookieKey.REFRESH_TOKEN,
-      CookieKey.USER_ID,
-      CookieKey.USER_EMAIL,
-      CookieKey.USER_NAME,
-      CookieKey.USER_TYPE,
-    ] })
+    BrowserStorageUtility.removeCookies([
+      CookieKey.ACCESS_TOKEN, CookieKey.REFRESH_TOKEN, CookieKey.USER_ID, CookieKey.USER_EMAIL, CookieKey.USER_NAME, CookieKey.USER_TYPE,
+    ])
   }
 
   static getAccessToken(): string | null {
-    return BrowserStorageUtility.getCookie({ key: CookieKey.ACCESS_TOKEN })
+    return BrowserStorageUtility.getCookie(CookieKey.ACCESS_TOKEN)
   }
 
   static getRefreshToken(): string | null {
-    return BrowserStorageUtility.getCookie({ key: CookieKey.REFRESH_TOKEN })
+    return BrowserStorageUtility.getCookie(CookieKey.REFRESH_TOKEN)
   }
 
   static getUserId(): number | null {
-    const userId = BrowserStorageUtility.getCookie({ key: CookieKey.USER_ID })
+    const userId = BrowserStorageUtility.getCookie(CookieKey.USER_ID)
     return userId === null ? null : Number(userId)
   }
 
   static getUserType(): string | null {
-    return BrowserStorageUtility.getCookie({ key: CookieKey.USER_TYPE })
+    return BrowserStorageUtility.getCookie(CookieKey.USER_TYPE)
   }
 
   static getUserTypeExternal(): { type: UserType, name: string, containTypes: UserType[] } | null {
