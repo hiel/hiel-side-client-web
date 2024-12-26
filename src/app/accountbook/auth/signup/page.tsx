@@ -67,38 +67,38 @@ export default function AccountBookSignup() {
   return (
     <main>
       <h1>#signUp#</h1>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={ handleSubmit }>
         <input
-          value={formData.email}
-          onChange={handleFormChange}
+          value={ formData.email }
+          onChange={ handleFormChange }
           name="email"
           type="email"
           placeholder="email"
         />
         <input
-          value={formData.password}
-          onChange={handleFormChange}
+          value={ formData.password }
+          onChange={ handleFormChange }
           name="password"
           type="password"
           placeholder="password"
         />
         <input
-          value={formData.confirmPassword}
-          onChange={handleFormChange}
+          value={ formData.confirmPassword }
+          onChange={ handleFormChange }
           name="confirmPassword"
           type="password"
           placeholder="confirmPassword"
         />
         <input
-          value={formData.username}
-          onChange={handleFormChange}
+          value={ formData.username }
+          onChange={ handleFormChange }
           name="username"
           type="text"
           placeholder="username"
         />
         <input type="submit" />
       </form>
-      <p>{errorMessage}</p>
+      <p>{ errorMessage }</p>
     </main>
   )
 }

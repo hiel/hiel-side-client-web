@@ -1,31 +1,27 @@
 import "@/app/globals.css"
 import { ReactNode } from "react"
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
-import LoadSpinner from "@/app/LoadSpinner"
+import LoadSpinner from "@/common/components/LoadSpinner"
 import Link from "next/link"
-import AuthProvider from "@/app/AuthProvider"
-import AccountBookNavigation from "@/app/accountbook/AccountBookNavigation"
+import AuthProvider from "@/common/providers/AuthProvider"
+import AccountBookNavigation from "@/app/accountbook/_AccountBookNavigation"
 import { Provider } from "@/components/ui/provider"
-import QueryProvider from "@/app/QueryProvider"
+import QueryProvider from "@/common/providers/QueryProvider"
+import type { Metadata } from "next"
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: ReactNode,
-}>) {
+export const metadata: Metadata = {
+  title: "accountbook",
+  description: "accountbook",
+}
+
+export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
     <html lang="ko">
       <body>
         <QueryProvider>
           <AuthProvider>
             <Provider defaultTheme={"light"}>
-              <div
-                suppressHydrationWarning
-                style={{
-                  maxWidth: "600px",
-                  margin: "0 auto",
-                }}
-              >
+              <div suppressHydrationWarning style={{ maxWidth: "600px", margin: "0 auto" }}>
                 <header
                   style={{
                     position: "sticky",
@@ -37,16 +33,14 @@ export default function RootLayout({
                     padding: "0 20px",
                   }}
                 >
-                  <Link href={"/accountbook"}>
+                  <Link href={ "/accountbook" }>
                     HOME
                   </Link>
-                  <Link href={"/accountbook/mypage"}>
+                  <Link href={ "/accountbook/mypage" }>
                     MY
                   </Link>
                 </header>
-                <div>
-                  {children}
-                </div>
+                <div>{ children }</div>
                 <AccountBookNavigation />
               </div>
               <LoadSpinner />

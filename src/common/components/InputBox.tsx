@@ -1,38 +1,23 @@
 import { defineStyle, Field, Input } from "@chakra-ui/react"
 import { Control, Controller, FieldValues, Path } from "react-hook-form"
 
-export default function InputBox<T extends FieldValues>({
-  name,
-  control,
-  type,
-  label,
-  placeholder = "",
-  styles = {},
-}: {
-  name: Path<T>,
-  control: Control<T>,
-  type: "text" | "number",
-  label: string,
-  placeholder?: string,
-  styles?: object,
-}) {
+export default function InputBox<T extends FieldValues>({ name, control, type, label, placeholder = "", styles = {} }
+  : { name: Path<T>, control: Control<T>, type: "text" | "number", label: string, placeholder?: string, styles?: object }) {
   return (
     <Controller
-      name={name}
-      control={control}
+      name={ name }
+      control={ control }
       render={({ field: { onChange } }) => (
         <Field.Root>
           <Input
-            type={type}
-            onChange={onChange}
+            type={ type }
+            onChange={ onChange }
             variant="outline"
             className="peer"
-            placeholder={placeholder}
-            style={{
-              borderWidth: "1px",
-            } && styles}
+            placeholder={ placeholder }
+            style={ { borderWidth: "1px" } && styles }
           />
-          <Field.Label css={defineStyle({
+          <Field.Label css={ defineStyle({
             pos: "absolute",
             bg: "bg",
             px: "0.5",
@@ -51,7 +36,7 @@ export default function InputBox<T extends FieldValues>({
               top: "-3",
               insetStart: "2",
             },
-          })}>{label}</Field.Label>
+          })}>{ label }</Field.Label>
         </Field.Root>
       )}
     />

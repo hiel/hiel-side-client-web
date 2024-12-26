@@ -17,9 +17,7 @@ export default function LoadSpinner() {
           backgroundColor: "red",
           opacity: 0.2,
         }}
-      >
-        isLoading
-      </div>
+      >isLoading</div>
     )}
   </>)
 }

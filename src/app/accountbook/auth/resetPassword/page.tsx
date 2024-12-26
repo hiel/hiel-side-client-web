@@ -34,7 +34,7 @@ export default function AccountBookResetPassword() {
   return (
     <main>
       <h1>#resetPassword#</h1>
-      <p>password : {password}</p>
+      <p>password : { password }</p>
     </main>
   )
 }

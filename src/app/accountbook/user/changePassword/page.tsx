@@ -9,15 +9,8 @@ import { useMutation } from "@tanstack/react-query"
 
 export default function AccountBookChangePassword() {
   const router = useRouter()
-  const [ formData, setFormData ] = useState<{
-    currentPassword: string,
-    updatePassword: string,
-    confirmPassword: string,
-  }>({
-    currentPassword: "",
-    updatePassword: "",
-    confirmPassword: "",
-  })
+  const [ formData, setFormData ] = useState<{ currentPassword: string, updatePassword: string, confirmPassword: string }>(
+    { currentPassword: "", updatePassword: "", confirmPassword: "" })
   const [ errorMessage, setErrorMessage ] = useState<string>("")
 
   const handleFormChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -56,31 +49,31 @@ export default function AccountBookChangePassword() {
   return (
     <main>
       <h1>#changePassword#</h1>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={ handleSubmit }>
         <input
-          value={formData.currentPassword}
-          onChange={handleFormChange}
+          value={ formData.currentPassword }
+          onChange={ handleFormChange }
           name="currentPassword"
           type="password"
           placeholder="currentPassword"
         />
         <input
-          value={formData.updatePassword}
-          onChange={handleFormChange}
+          value={ formData.updatePassword }
+          onChange={ handleFormChange }
           name="updatePassword"
           type="password"
           placeholder="updatePassword"
         />
         <input
-          value={formData.confirmPassword}
-          onChange={handleFormChange}
+          value={ formData.confirmPassword }
+          onChange={ handleFormChange }
           name="confirmPassword"
           type="password"
           placeholder="confirmPassword"
         />
         <input type="submit" />
       </form>
-      <p>{errorMessage}</p>
+      <p>{ errorMessage }</p>
     </main>
   )
 }

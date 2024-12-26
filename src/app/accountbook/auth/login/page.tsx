@@ -11,10 +11,7 @@ import AuthStore from "@/common/stores/AuthStore"
 
 export default function AccountBookLogin() {
   const router = useRouter()
-  const [ formData, setFormData ] = useState<LoginRequest>({
-    email: "",
-    password: "",
-  })
+  const [ formData, setFormData ] = useState<LoginRequest>({ email: "", password: "" })
   const [ errorMessage, setErrorMessage ] = useState<string>("")
   const setIsLogined = AuthStore((state) => state.setIsLogined)
 
@@ -52,24 +49,24 @@ export default function AccountBookLogin() {
   return (
     <main>
       <h1>#login#</h1>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={ handleSubmit }>
         <input
-          value={formData.email}
-          onChange={handleFormChange}
+          value={ formData.email }
+          onChange={ handleFormChange }
           name="email"
           type="email"
           placeholder="email"
         />
         <input
-          value={formData.password}
-          onChange={handleFormChange}
+          value={ formData.password }
+          onChange={ handleFormChange }
           name="password"
           type="password"
           placeholder="password"
         />
-        <input type="submit"/>
+        <input type="submit" />
       </form>
-      <p>{errorMessage}</p>
+      <p>{ errorMessage }</p>
     </main>
   )
 }

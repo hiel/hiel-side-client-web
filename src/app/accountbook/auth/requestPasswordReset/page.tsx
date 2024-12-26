@@ -9,9 +9,7 @@ import { useMutation } from "@tanstack/react-query"
 
 export default function AccountBookRequestPasswordReset() {
   const router = useRouter()
-  const [ formData, setFormData ] = useState<RequestPasswordResetRequest>({
-    email: "",
-  })
+  const [ formData, setFormData ] = useState<RequestPasswordResetRequest>({ email: "" })
   const [ errorMessage, setErrorMessage ] = useState<string>("")
 
   const handleFormChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -43,17 +41,17 @@ export default function AccountBookRequestPasswordReset() {
   return (
     <main>
       <h1>#requestPasswordReset#</h1>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={ handleSubmit }>
         <input
-          value={formData.email}
-          onChange={handleFormChange}
+          value={ formData.email }
+          onChange={ handleFormChange }
           name="email"
           type="email"
           placeholder="email"
         />
-        <input type="submit"/>
+        <input type="submit" />
       </form>
-      <p>{errorMessage}</p>
+      <p>{ errorMessage }</p>
     </main>
   )
 }
