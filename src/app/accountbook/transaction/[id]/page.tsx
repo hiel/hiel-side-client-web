@@ -19,13 +19,14 @@ import ChckboxCard from "@/common/components/ChckboxCard"
 import { Button } from "@/components/ui/button"
 import InputBox from "@/common/components/InputBox"
 import styled from "styled-components"
-import ErrorMessage from "@/app/accountbook/transaction/register/_ErrorMessage"
 import { TransactionApi } from "@/accountbook/apis/transaction/TransactionApi"
-import { TransactionRegisterRequest } from "@/accountbook/apis/transaction/TransactionApiDomains"
+import { TransactionRegisterRequest, TransactionUpdateRequest } from "@/accountbook/apis/transaction/TransactionApiDomains"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
+import ErrorMessage from "@/app/accountbook/transaction/[id]/_ErrorMessage"
+import { StringUtility } from "@/common/utilities/StringUtility"
 
-interface TransactionRegisterRequestForm {
+interface TransactionUpsertRequestForm {
   price: string,
   title: string,
   transactionDate: string,
@@ -34,7 +35,7 @@ interface TransactionRegisterRequestForm {
   incomeExpenseType: IncomeExpenseType,
   isWaste: boolean,
 }
-const _toRequest = (form: TransactionRegisterRequestForm): TransactionRegisterRequest => {
+function _toRegisterRequest(form: TransactionUpsertRequestForm): TransactionRegisterRequest {
   return {
     ...form,
     price: Number(form.price),
@@ -43,14 +44,25 @@ const _toRequest = (form: TransactionRegisterRequestForm): TransactionRegisterRe
     transactionCategoryId: Number(form.budgetCategoryId),
   }
 }
+function _toUpdateRequest({ form, id }: { form: TransactionUpsertRequestForm, id: number }): TransactionUpdateRequest {
+  return {
+    ...form,
+    price: Number(form.price),
+    transactionDate: dayjs(form.transactionDate).toDate(),
+    budgetCategoryId: Number(form.budgetCategoryId),
+    transactionCategoryId: Number(form.budgetCategoryId),
+    id: id,
+  }
+}
 
 const InputContainer = styled.div`
   margin-bottom: 10px;
 `
 
-export default function RegisterTransaction() {
+export default function TransactionDetail({ params }: { params: { id: string | undefined } }) {
+  const pageType: "REGISTER" | "UPDATE" = params.id === "register" ? "REGISTER" : "UPDATE"
   const router = useRouter()
-  const { handleSubmit, control, resetField, setError, formState: { errors } } = useForm<TransactionRegisterRequestForm>({
+  const { handleSubmit, control, reset, resetField, setError, formState: { errors } } = useForm<TransactionUpsertRequestForm>({
     mode: "onChange",
     defaultValues: { price: "", title: "", transactionDate: DateTimeUtility.toString({ dayjs: dayjs() }),
       incomeExpenseType: IncomeExpenseType.EXPENSE, isWaste: false },
@@ -67,7 +79,6 @@ export default function RegisterTransaction() {
       return (data.data as BudgetCategoryGetAllResponse).list
     },
   })
-
   useEffect(() => {
     const category = _.first(budgetCategories)
     if (category) {
@@ -86,7 +97,6 @@ export default function RegisterTransaction() {
       return (data.data as TransactionCategoryGetAllResponse).list
     },
   })
-
   useEffect(() => {
     const category = _.first(transactionCategories)
     if (category) {
@@ -94,27 +104,71 @@ export default function RegisterTransaction() {
     }
   }, [transactionCategories, resetField])
 
-  const validate = (data: TransactionRegisterRequestForm): boolean => {
+  const { data: transactionDetail } = useQuery({
+    queryKey: ["TransactionApi.getDetail", params.id],
+    queryFn: () => TransactionApi.getDetail({ id: Number(params.id) }),
+    select: (data) => {
+      if (!data.isSuccessAndHasData()) {
+        alert(data.message)
+        return
+      }
+      return data.data
+    },
+    enabled: pageType === "UPDATE",
+  })
+  useEffect(() => {
+    if (pageType !== "UPDATE" || !transactionDetail) { return }
+    reset({
+      price: String(transactionDetail.price),
+      title: transactionDetail.title,
+      transactionDate: DateTimeUtility.toString({ dayjs: dayjs(transactionDetail.date) }),
+      budgetCategoryId: String(transactionDetail.budgetCategoryId),
+      transactionCategoryId: String(transactionDetail.transactionCategoryId),
+      incomeExpenseType: transactionDetail.incomeExpenseType,
+      isWaste: transactionDetail.isWaste,
+    })
+  }, [pageType, transactionDetail, reset])
+
+  const validate = (data: TransactionUpsertRequestForm): boolean => {
     let isValid = true
-    if (data.price.trim().length < 1) {
+    if (StringUtility.isBlank(data.price)) {
       isValid = false
       setError("price", { type: "required", message: "금액을 입력해주세요" })
     }
-    if (data.title.trim().length < 1) {
+    if (StringUtility.isBlank(data.title)) {
       isValid = false
       setError("title", { type: "required", message: "내역을 입력해주세요" })
     }
     return isValid
   }
 
-  const onSubmit: SubmitHandler<TransactionRegisterRequestForm> = (data: TransactionRegisterRequestForm) => {
+  const onSubmit: SubmitHandler<TransactionUpsertRequestForm> = (data: TransactionUpsertRequestForm) => {
     if (!validate(data)) { return }
     const submitData = { ...data, price: data.price.trim(), title: data.title.trim() }
-    registerMutation.mutate(submitData)
+    if (pageType === "REGISTER") {
+      registerMutation.mutate(submitData)
+    } else {
+      if (confirm("수정하시겠습니까?")) {
+        updateMutation.mutate(submitData)
+      }
+    }
   }
 
   const registerMutation = useMutation({
-    mutationFn: (data: TransactionRegisterRequestForm) => TransactionApi.register(_toRequest(data)),
+    mutationFn: (data: TransactionUpsertRequestForm) => TransactionApi.register(_toRegisterRequest(data)),
+    onSuccess: (data) => {
+      if (!data.isSuccess()) {
+        alert(data.message)
+        return
+      }
+      alert("수정되었습니다")
+      router.push("/accountbook/transaction")
+    },
+  })
+
+  const updateMutation = useMutation({
+    mutationFn: (data: TransactionUpsertRequestForm) =>
+      TransactionApi.update(_toUpdateRequest({ id: Number(params.id), form: data })),
     onSuccess: (data) => {
       if (!data.isSuccess()) {
         alert(data.message)
@@ -155,9 +209,7 @@ export default function RegisterTransaction() {
         <InputContainer style={{ display: "flex", gap: "10px" }}>
           <SelectBox
             name="budgetCategoryId"
-            items={_.map(budgetCategories, v => {
-              return { label: v.name, value: v.id }
-            })}
+            items={ _.map(budgetCategories, v => ({ label: v.name, value: v.id })) }
             placeholder="예산 타입을 등록해주세요"
             wrapperStyles={{ flex: 1 }}
             control={ control }
@@ -170,9 +222,7 @@ export default function RegisterTransaction() {
         <InputContainer style={{ display: "flex", gap: "10px" }}>
           <SelectBox
             name="transactionCategoryId"
-            items={_.map(transactionCategories, v => {
-              return { label: v.name, value: v.id }
-            })}
+            items={ _.map(transactionCategories, v => ({ label: v.name, value: v.id })) }
             placeholder="내역 타입을 등록해주세요"
             wrapperStyles={{ flex: 1 }}
             control={ control }
@@ -185,9 +235,8 @@ export default function RegisterTransaction() {
         <InputContainer>
           <RadioCard
             name="incomeExpenseType"
-            items={_.map(getSortedIncomeExpenseTypeExternal(), v => {
-              return { label: v.name, value: String(v.type), styles: { color: v.color } }
-            })}
+            items={ _.map(getSortedIncomeExpenseTypeExternal(),
+              v => ({ label: v.name, value: String(v.type), styles: { color: v.color } })) }
             control={ control }
           />
         </InputContainer>
@@ -197,7 +246,9 @@ export default function RegisterTransaction() {
         </InputContainer>
 
         <InputContainer>
-          <Button type="submit" style={{ background: "#265A61", width: "100%", padding: "20px" }}>등록</Button>
+          <Button type="submit" style={{ background: "#265A61", width: "100%", padding: "20px" }}>
+            { pageType === "REGISTER" ? "등록" : "수정" }
+          </Button>
         </InputContainer>
       </form>
     </main>

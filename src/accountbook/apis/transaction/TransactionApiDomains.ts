@@ -11,6 +11,34 @@ export interface TransactionRegisterRequest {
   isWaste: boolean,
 }
 
+export interface TransactionUpdateRequest {
+  id: number,
+  title: string,
+  price: number,
+  transactionDate: Date,
+  budgetCategoryId: number,
+  transactionCategoryId: number,
+  incomeExpenseType: IncomeExpenseType,
+  isWaste: boolean,
+}
+
+export interface TransactionGetDetailRequest {
+  id: number,
+}
+
+export interface TransactionGetDetailResponse {
+  id: number,
+  date: string,
+  price: number,
+  title: string,
+  budgetCategoryId: number,
+  budgetCategoryName: string,
+  transactionCategoryId: number,
+  transactionCategoryName: string,
+  incomeExpenseType: IncomeExpenseType,
+  isWaste: boolean,
+}
+
 export interface TransactionGetSliceRequest {
   page: number,
   pageSize: number,
@@ -25,12 +53,12 @@ export interface TransactionGetSliceResponse {
 interface TransactionGetSliceResponseDetail {
   id: number,
   date: string,
+  price: number,
+  title: string,
   budgetCategoryId: number,
   budgetCategoryName: string,
   transactionCategoryId: number,
   transactionCategoryName: string,
-  title: string,
-  price: number,
   incomeExpenseType: IncomeExpenseType,
   isWaste: boolean,
 }

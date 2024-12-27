@@ -7,11 +7,12 @@ export default function ChckboxCard<T extends FieldValues>({ name, label, contro
     <Controller
       name={ name }
       control={ control }
-      render={({ field: { onChange } }) => (
+      render={({ field: { value, onChange } }) => (
         <CheckboxCard
+          checked={ value }
           label={ label }
           key={ label }
-          onChange={ onChange }
+          onCheckedChange={ e => onChange(e.checked) }
           style={ styles }
         />
       )}

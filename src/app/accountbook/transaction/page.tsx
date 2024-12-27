@@ -52,7 +52,7 @@ export default function Transactions() {
     return dayjs(transactions!.pages[0]!.transactionDatetime)
   }
 
-  const isFutureAfterMonth = (month: number) => {
+  const isFutureAfter = ({ month }: { month: number }) => {
     return dayjs(getYearMonth()).subtract(month, "month").startOf("month").isBefore(dayjs().startOf("month"))
   }
 
@@ -77,13 +77,14 @@ export default function Transactions() {
             style={{ textAlign: "left" }}
           >{ "<" }</Link>
           <h1 style={{ textAlign: "center", flexGrow: 1 }}>{ dayjs(transactions.pages[0]!.transactionDatetime).format("YY년 MM월") }</h1>
-          { isFutureAfterMonth(1) ? (
+          { isFutureAfter({ month: 1 }) ? (
             <Link
               href={ `/accountbook/transaction?yearMonth=${getYearMonth().add(1, "month").format("YYYY-MM")}` }
               style={{ textAlign: "right" }}
             >{ ">" }</Link>
           ) : <></> }
         </div>
+
         <ul>
           <InfiniteScroll
             next={ fetchNextPage }
@@ -101,18 +102,20 @@ export default function Transactions() {
                   }}
                   key={ index }
                 >
-                  <div>
-                    <TransactionText style={{ marginRight: "40px" }}>{ transaction.date.substring(6, 8) }</TransactionText>
-                    <TransactionText style={{ width: "400px" }}>{ transaction.title }</TransactionText>
-                    <TransactionText
-                      style={ transaction.incomeExpenseType === IncomeExpenseType.INCOME ? { color: "#6C78E0" } : { color: "#E06C6C" }}
-                    >{ transaction.price.toLocaleString("ko") }</TransactionText>
-                  </div>
-                  <div style={{ display: "flex" }}>
-                    <TransactionSubText>{ transaction.budgetCategoryName }</TransactionSubText>
-                    <TransactionSubText>{ transaction.transactionCategoryName }</TransactionSubText>
-                    <TransactionSubText>{ transaction.isWaste ? "낭비" : "" }</TransactionSubText>
-                  </div>
+                  <Link href={`/accountbook/transaction/${transaction.id}`}>
+                    <div>
+                      <TransactionText style={{ marginRight: "40px" }}>{ transaction.date.substring(6, 8) }</TransactionText>
+                      <TransactionText style={{ width: "400px" }}>{ transaction.title }</TransactionText>
+                      <TransactionText
+                        style={ transaction.incomeExpenseType === IncomeExpenseType.INCOME ? { color: "#6C78E0" } : { color: "#E06C6C" }}
+                      >{ transaction.price.toLocaleString("ko") }</TransactionText>
+                    </div>
+                    <div style={{ display: "flex" }}>
+                      <TransactionSubText>{ transaction.budgetCategoryName }</TransactionSubText>
+                      <TransactionSubText>{ transaction.transactionCategoryName }</TransactionSubText>
+                      <TransactionSubText>{ transaction.isWaste ? "낭비" : "" }</TransactionSubText>
+                    </div>
+                  </Link>
                 </li>
               ))
             ))}

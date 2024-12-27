@@ -7,10 +7,11 @@ export default function InputBox<T extends FieldValues>({ name, control, type, l
     <Controller
       name={ name }
       control={ control }
-      render={({ field: { onChange } }) => (
+      render={({ field: { value, onChange } }) => (
         <Field.Root>
           <Input
             type={ type }
+            value={ value }
             onChange={ onChange }
             variant="outline"
             className="peer"
