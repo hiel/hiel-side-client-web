@@ -23,8 +23,11 @@ import { TransactionApi } from "@/accountbook/apis/transaction/TransactionApi"
 import { TransactionRegisterRequest, TransactionUpdateRequest } from "@/accountbook/apis/transaction/TransactionApiDomains"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import ErrorMessage from "@/app/accountbook/transaction/[id]/_ErrorMessage"
+import ErrorMessage from "@/app/accountbook/transaction/[id]/ErrorMessage"
 import { StringUtility } from "@/common/utilities/StringUtility"
+import Header from "@/app/accountbook/header/Header"
+import BackButton from "@/app/accountbook/header/BackButton"
+import Title from "@/app/accountbook/header/Title"
 
 interface TransactionUpsertRequestForm {
   price: string,
@@ -35,7 +38,7 @@ interface TransactionUpsertRequestForm {
   incomeExpenseType: IncomeExpenseType,
   isWaste: boolean,
 }
-function _toRegisterRequest(form: TransactionUpsertRequestForm): TransactionRegisterRequest {
+function toRegisterRequest(form: TransactionUpsertRequestForm): TransactionRegisterRequest {
   return {
     ...form,
     price: Number(form.price),
@@ -44,7 +47,7 @@ function _toRegisterRequest(form: TransactionUpsertRequestForm): TransactionRegi
     transactionCategoryId: Number(form.budgetCategoryId),
   }
 }
-function _toUpdateRequest({ form, id }: { form: TransactionUpsertRequestForm, id: number }): TransactionUpdateRequest {
+function toUpdateRequest({ form, id }: { form: TransactionUpsertRequestForm, id: number }): TransactionUpdateRequest {
   return {
     ...form,
     price: Number(form.price),
@@ -56,7 +59,7 @@ function _toUpdateRequest({ form, id }: { form: TransactionUpsertRequestForm, id
 }
 
 const InputContainer = styled.div`
-  margin-bottom: 10px;
+  margin-top: 10px;
 `
 
 export default function TransactionDetail({ params }: { params: { id: string | undefined } }) {
@@ -69,7 +72,7 @@ export default function TransactionDetail({ params }: { params: { id: string | u
   })
 
   const { data: budgetCategories } = useQuery({
-    queryKey: ["BudgetCategoryApi.getAll"],
+    queryKey: [TransactionCategoryApi.QUERY_KEYS.GET_ALL],
     queryFn: () => BudgetCategoryApi.getAll(),
     select: (data) => {
       if (!data.isSuccessAndHasData()) {
@@ -87,7 +90,7 @@ export default function TransactionDetail({ params }: { params: { id: string | u
   }, [budgetCategories, resetField])
 
   const { data: transactionCategories } = useQuery({
-    queryKey: ["TransactionCategoryApi.getAll"],
+    queryKey: [TransactionCategoryApi.QUERY_KEYS.GET_ALL],
     queryFn: () => TransactionCategoryApi.getAll(),
     select: (data) => {
       if (!data.isSuccessAndHasData()) {
@@ -105,7 +108,7 @@ export default function TransactionDetail({ params }: { params: { id: string | u
   }, [transactionCategories, resetField])
 
   const { data: transactionDetail } = useQuery({
-    queryKey: ["TransactionApi.getDetail", params.id],
+    queryKey: [TransactionApi.QUERY_KEYS.GET_DETAIL, params.id],
     queryFn: () => TransactionApi.getDetail({ id: Number(params.id) }),
     select: (data) => {
       if (!data.isSuccessAndHasData()) {
@@ -155,7 +158,7 @@ export default function TransactionDetail({ params }: { params: { id: string | u
   }
 
   const registerMutation = useMutation({
-    mutationFn: (data: TransactionUpsertRequestForm) => TransactionApi.register(_toRegisterRequest(data)),
+    mutationFn: (data: TransactionUpsertRequestForm) => TransactionApi.register(toRegisterRequest(data)),
     onSuccess: (data) => {
       if (!data.isSuccess()) {
         alert(data.message)
@@ -168,7 +171,7 @@ export default function TransactionDetail({ params }: { params: { id: string | u
 
   const updateMutation = useMutation({
     mutationFn: (data: TransactionUpsertRequestForm) =>
-      TransactionApi.update(_toUpdateRequest({ id: Number(params.id), form: data })),
+      TransactionApi.update(toUpdateRequest({ id: Number(params.id), form: data })),
     onSuccess: (data) => {
       if (!data.isSuccess()) {
         alert(data.message)
@@ -178,7 +181,12 @@ export default function TransactionDetail({ params }: { params: { id: string | u
     },
   })
 
-  return (
+  return ( <>
+    <Header>
+      <BackButton />
+      <Title title="내역 등록" />
+      <div></div>
+    </Header>
     <main>
       <form onSubmit={ handleSubmit(onSubmit) }>
         <InputContainer>
@@ -245,12 +253,19 @@ export default function TransactionDetail({ params }: { params: { id: string | u
           <ChckboxCard name="isWaste" label="낭비" control={ control } />
         </InputContainer>
 
-        <InputContainer>
-          <Button type="submit" style={{ background: "#265A61", width: "100%", padding: "20px" }}>
+        <InputContainer
+          style={{
+            position: "fixed",
+            bottom: 0,
+            width: "calc(100% - 40px)",
+            marginBottom: "20px",
+          }}
+        >
+          <Button type="submit" style={{ background: "#265A61", width: "100%" }}>
             { pageType === "REGISTER" ? "등록" : "수정" }
           </Button>
         </InputContainer>
       </form>
     </main>
-  )
+  </> )
 }

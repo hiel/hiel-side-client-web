@@ -29,7 +29,7 @@ export default function Transactions() {
   const yearMonth = useSearchParams().get("yearMonth")
 
   const { data: transactions, fetchNextPage, hasNextPage } = useInfiniteQuery({
-    queryKey: ["TransactionApi.getSlice", yearMonth],
+    queryKey: [TransactionApi.QUERY_KEYS.GET_SLICE, yearMonth],
     queryFn: async ({ pageParam }) => {
       const response = await TransactionApi.getSlice({
         page: pageParam,
@@ -48,13 +48,10 @@ export default function Transactions() {
     },
   })
 
-  const getYearMonth = () => {
-    return dayjs(transactions!.pages[0]!.transactionDatetime)
-  }
+  const getYearMonth = () => dayjs(transactions!.pages[0]!.transactionDatetime)
 
-  const isFutureAfter = ({ month }: { month: number }) => {
-    return dayjs(getYearMonth()).subtract(month, "month").startOf("month").isBefore(dayjs().startOf("month"))
-  }
+  const isFutureAfter = ({ month }: { month: number }) =>
+    dayjs(getYearMonth()).subtract(month, "month").startOf("month").isBefore(dayjs().startOf("month"))
 
   return (
     <main>

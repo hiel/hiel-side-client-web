@@ -7,7 +7,7 @@ import dayjs from "dayjs"
 type RequestDataType = number | string | boolean | Date
 type RequestDataRecordType = Record<string, RequestDataType>
 
-function _convertData(data: RequestDataType): string {
+function convertData(data: RequestDataType): string {
   return (data instanceof Date) ?
     DateTimeUtility.toString({ dayjs: dayjs(data), format: DATETIME_FORMAT.DATETIME_TIMEZONE }) : data.toString()
 }
@@ -113,7 +113,7 @@ export class Api {
     }
     if (queryParams) {
       queryParams = _.reduce(queryParams, (result, value, key) => {
-        result[key] = _convertData(value)
+        result[key] = convertData(value)
         return result
       }, {} as RequestDataRecordType)
     }
@@ -124,7 +124,7 @@ export class Api {
     }
     if (requestBody) {
       Object.entries(requestBody).forEach(([key, value]) => {
-        formData!.append(key, _convertData(value))
+        formData!.append(key, convertData(value))
       })
     }
     if (files) {

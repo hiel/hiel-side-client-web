@@ -22,6 +22,10 @@ export interface TransactionUpdateRequest {
   isWaste: boolean,
 }
 
+export interface TransactionDeleteRequest {
+  id: number,
+}
+
 export interface TransactionGetDetailRequest {
   id: number,
 }

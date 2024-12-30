@@ -1,14 +1,21 @@
 import { customApi } from "@/accountbook/apis/CustomApi"
 import {
-  TransactionGetDetailRequest, TransactionGetDetailResponse,
+  TransactionDeleteRequest,
+  TransactionGetDetailRequest,
+  TransactionGetDetailResponse,
   TransactionGetSliceRequest,
   TransactionGetSliceResponse,
-  TransactionRegisterRequest, TransactionUpdateRequest,
+  TransactionRegisterRequest,
+  TransactionUpdateRequest,
 } from "@/accountbook/apis/transaction/TransactionApiDomains"
 import { ApiResponse } from "@/common/apis/ApiDomains"
 
 export class TransactionApi {
   static URL_PREFIX = "/account-book/transactions"
+  static QUERY_KEYS = {
+    GET_DETAIL: "TransactionApi.getDetail",
+    GET_SLICE: "TransactionApi.getSlice",
+  }
 
   static async register(request: TransactionRegisterRequest) {
     return await customApi.post({ url: this.URL_PREFIX, requestBody: { ...request } })
@@ -19,7 +26,7 @@ export class TransactionApi {
     return await customApi.put({ url: `${this.URL_PREFIX}/${id}`, requestBody: { ...requestBody } })
   }
 
-  static async delete(request: TransactionUpdateRequest) {
+  static async delete(request: TransactionDeleteRequest) {
     const { id, ...requestBody } = request
     return await customApi.delete({ url: `${this.URL_PREFIX}/${id}`, requestBody: { ...requestBody } })
   }
