@@ -1,5 +1,6 @@
 import { ApiResultCode } from "@/common/apis/ApiResultCode"
 import { ValidationUtility } from "@/common/utilities/ValidationUtility"
+import { CollectionUtility } from "@/common/utilities/CollectionUtility"
 
 export class ApiResponse<D = null> {
   public resultCode: string
@@ -25,4 +26,8 @@ export interface SliceResponseData<E> {
   content: E[],
   pageSize: number,
   hasNext: boolean,
+}
+
+export function hasContent<E>(slice: SliceResponseData<E>): boolean {
+  return CollectionUtility.isNotEmpty(slice.content)
 }

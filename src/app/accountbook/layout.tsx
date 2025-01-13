@@ -19,7 +19,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
         <QueryProvider>
           <AuthProvider>
             <Provider defaultTheme={"light"}>
-              <div suppressHydrationWarning style={{ width: "100%", padding: "20px" }}>
+              <div suppressHydrationWarning style={{ width: "100%" }}>
                 <div>{ children }</div>
               </div>
               <LoadSpinner />

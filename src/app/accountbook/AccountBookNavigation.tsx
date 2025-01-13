@@ -20,11 +20,11 @@ export default function AccountBookNavigation() {
   return (
     <nav
       style={{
-        position: "sticky",
+        position: "fixed",
         bottom: 0,
+        width: "100%",
         height: "50px",
-        borderRadius: "10px 10px 0 0",
-        background: "#265A61",
+        background: "#000000",
       }}
     >
       <ul

@@ -15,7 +15,7 @@ export interface BudgetCategoryGetAllResponse {
   list: BudgetCategoryGetAllResponseDetail[],
 }
 
-interface BudgetCategoryGetAllResponseDetail {
+export interface BudgetCategoryGetAllResponseDetail {
   id: number,
   name: string,
 }

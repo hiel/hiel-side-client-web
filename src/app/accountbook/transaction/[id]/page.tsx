@@ -22,12 +22,12 @@ import styled from "styled-components"
 import { TransactionApi } from "@/accountbook/apis/transaction/TransactionApi"
 import { TransactionRegisterRequest, TransactionUpdateRequest } from "@/accountbook/apis/transaction/TransactionApiDomains"
 import { useRouter } from "next/navigation"
-import Link from "next/link"
 import ErrorMessage from "@/app/accountbook/transaction/[id]/ErrorMessage"
 import { StringUtility } from "@/common/utilities/StringUtility"
 import Header from "@/app/accountbook/header/Header"
 import BackButton from "@/app/accountbook/header/BackButton"
 import Title from "@/app/accountbook/header/Title"
+import Container from "@/app/accountbook/Container"
 
 interface TransactionUpsertRequestForm {
   price: string,
@@ -59,7 +59,7 @@ function toUpdateRequest({ form, id }: { form: TransactionUpsertRequestForm, id:
 }
 
 const InputContainer = styled.div`
-  margin-top: 10px;
+  margin-bottom: 13px;
 `
 
 export default function TransactionDetail({ params }: { params: { id: string | undefined } }) {
@@ -90,7 +90,7 @@ export default function TransactionDetail({ params }: { params: { id: string | u
   }, [budgetCategories, resetField])
 
   const { data: transactionCategories } = useQuery({
-    queryKey: [TransactionCategoryApi.QUERY_KEYS.GET_ALL],
+    queryKey: [BudgetCategoryApi.QUERY_KEYS.GET_ALL],
     queryFn: () => TransactionCategoryApi.getAll(),
     select: (data) => {
       if (!data.isSuccessAndHasData()) {
@@ -164,8 +164,8 @@ export default function TransactionDetail({ params }: { params: { id: string | u
         alert(data.message)
         return
       }
-      alert("수정되었습니다")
-      router.push("/accountbook/transaction")
+      alert("등록되었습니다")
+      router.back()
     },
   })
 
@@ -177,95 +177,115 @@ export default function TransactionDetail({ params }: { params: { id: string | u
         alert(data.message)
         return
       }
-      router.push("/accountbook/transaction")
+      alert("수정되었습니다")
+      router.back()
     },
   })
 
-  return ( <>
-    <Header>
-      <BackButton />
-      <Title title="내역 등록" />
-      <div></div>
-    </Header>
-    <main>
-      <form onSubmit={ handleSubmit(onSubmit) }>
-        <InputContainer>
-          <InputBox name="price" type="number" label="금액" control={ control } />
-          <ErrorMessage message={ errors.price?.message } />
-        </InputContainer>
+  return (
+    <Container>
+      <Header>
+        <BackButton/>
+        <Title title={pageType === "REGISTER" ? "내역 등록" : "내역 수정"}/>
+        <div style={{width: "33%", height: "100%"}}></div>
+      </Header>
+      <main>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <InputContainer style={{marginTop: "10px"}}>
+            <InputBox name="price" type="number" label="금액" control={ control } />
+            <ErrorMessage message={ errors.price?.message }/>
+          </InputContainer>
 
-        <InputContainer>
-          <InputBox name="title" type="text" label="내역" control={ control } />
-          <ErrorMessage message={ errors.title?.message } />
-        </InputContainer>
+          <InputContainer>
+            <InputBox name="title" type="text" label="내역" control={ control } />
+            <ErrorMessage message={ errors.title?.message }/>
+          </InputContainer>
 
-        <InputContainer>
-          <Controller
-            name="transactionDate"
-            control={ control }
-            render={({ field: { value, onChange }}) => (
-              <DatePicker
-                selected={ dayjs(value).toDate() }
-                onChange={ v => onChange(DateTimeUtility.toString({ dayjs: dayjs(v) })) }
-                maxDate={ dayjs().add(1, "month").endOf("month").toDate() }
-                dateFormat="yyyy. MM. dd"
+          <InputContainer>
+            <Controller
+              name="transactionDate"
+              control={ control }
+              render={({field: { value, onChange }}) => (
+                <DatePicker
+                  selected={ dayjs(value).toDate() }
+                  onChange={ v => onChange(DateTimeUtility.toString({dayjs: dayjs(v)})) }
+                  maxDate={ dayjs().add(1, "month").endOf("month").toDate() }
+                  dateFormat="yyyy. MM. dd"
+                />
+              )}
+            />
+          </InputContainer>
+
+          {transactionCategories && (
+            <InputContainer style={{ display: "flex", gap: "10px" }}>
+              <SelectBox
+                name="transactionCategoryId"
+                items={_.map(
+                  (pageType === "UPDATE" && transactionDetail)
+                    ? _.uniqBy(
+                      _.concat({id: transactionDetail.transactionCategoryId, name: transactionDetail.transactionCategoryName},
+                        transactionCategories),
+                      "id",
+                    )
+                    : transactionCategories,
+                  v => ({ label: v.name, value: v.id }),
+                )}
+                placeholder="내역 타입을 등록해주세요"
+                wrapperStyles={{ flex: 1 }}
+                control={ control }
               />
-            )}
-          />
-        </InputContainer>
+              <Button onClick={() => router.push("/accountbook/budgetcategory")} style={{ width: "50px" }}>관리</Button>
+            </InputContainer>
+          )}
 
-        <InputContainer style={{ display: "flex", gap: "10px" }}>
-          <SelectBox
-            name="budgetCategoryId"
-            items={ _.map(budgetCategories, v => ({ label: v.name, value: v.id })) }
-            placeholder="예산 타입을 등록해주세요"
-            wrapperStyles={{ flex: 1 }}
-            control={ control }
-          />
-          <Button style={{ width: "50px" }}>
-            <Link href="/accountbook/transactioncategory">관리</Link>
-          </Button>
-        </InputContainer>
+          {budgetCategories && (
+            <InputContainer style={{display: "flex", gap: "10px"}}>
+              <SelectBox
+                name="budgetCategoryId"
+                items={_.map(
+                  (pageType === "UPDATE" && transactionDetail)
+                    ? _.uniqBy(
+                      _.concat({id: transactionDetail.budgetCategoryId, name: transactionDetail.budgetCategoryName}, budgetCategories),
+                      "id",
+                    )
+                    : budgetCategories,
+                  v => ({ label: v.name, value: v.id }),
+                )}
+                placeholder="예산 타입을 등록해주세요"
+                wrapperStyles={{ flex: 1 }}
+                control={ control }
+              />
+              <Button onClick={ () => router.push("/accountbook/transactioncategory") } style={{ width: "50px" }}>관리</Button>
+            </InputContainer>
+          )}
 
-        <InputContainer style={{ display: "flex", gap: "10px" }}>
-          <SelectBox
-            name="transactionCategoryId"
-            items={ _.map(transactionCategories, v => ({ label: v.name, value: v.id })) }
-            placeholder="내역 타입을 등록해주세요"
-            wrapperStyles={{ flex: 1 }}
-            control={ control }
-          />
-          <Button style={{ width: "50px" }}>
-            <Link href="/accountbook/budgetcategory">관리</Link>
-          </Button>
-        </InputContainer>
+          <InputContainer>
+            <RadioCard
+              name="incomeExpenseType"
+              items={_.map(getSortedIncomeExpenseTypeExternal(),
+                v => ({ label: v.name, value: String(v.type), styles: { color: v.color } }))}
+              control={ control }
+            />
+          </InputContainer>
 
-        <InputContainer>
-          <RadioCard
-            name="incomeExpenseType"
-            items={ _.map(getSortedIncomeExpenseTypeExternal(),
-              v => ({ label: v.name, value: String(v.type), styles: { color: v.color } })) }
-            control={ control }
-          />
-        </InputContainer>
+          <InputContainer>
+            <ChckboxCard name="isWaste" label="낭비" control={ control } />
+          </InputContainer>
 
-        <InputContainer>
-          <ChckboxCard name="isWaste" label="낭비" control={ control } />
-        </InputContainer>
-
-        <InputContainer
-          style={{
-            position: "fixed",
-            bottom: 0,
-            width: "calc(100% - 40px)",
-            marginBottom: "20px",
-          }}
-        >
-          <Button type="submit" style={{ background: "#265A61", width: "100%" }}>
-            { pageType === "REGISTER" ? "등록" : "수정" }
-          </Button>
-        </InputContainer>
-      </form>
-    </main>
-  </> )
+          <InputContainer
+            style={{
+              position: "fixed",
+              bottom: 0,
+              width: "calc(100% - 20px)",
+              marginBottom: "10px",
+            }}
+          >
+            <Button type="submit" style={{ width: "100%" }}>
+              { pageType === "REGISTER" ? "등록" : "수정" }
+            </Button>
+          </InputContainer>
+        </form>
+      </main>
+    </Container>
+  )
 }

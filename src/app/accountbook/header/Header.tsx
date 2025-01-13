@@ -9,14 +9,15 @@ export default function Header({ children }: Readonly<{ children: ReactNode }>) 
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        width: "calc(100% - 40px)",
-        height: "50px",
+        width: "calc(100% - 20px)",
+        height: "30px",
+        margin: "10px 0",
         background: "white",
         zIndex: 9999,
       }}
     >
-      {children}
+      { children }
     </header>
-    <div style={{ height: "calc(50px - 20px)" }}></div>
+    <div style={{ height: "calc(30px + 10px)" }}></div>
   </> )
 }
