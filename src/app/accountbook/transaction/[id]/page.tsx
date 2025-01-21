@@ -1,14 +1,14 @@
 "use client"
 
 import { useMutation, useQuery } from "@tanstack/react-query"
-import { BudgetCategoryApi } from "@/accountbook/apis/budgetcategory/BudgetCategoryApi"
+import { AssetCategoryApi } from "@/accountbook/apis/assetcategory/AssetCategoryApi"
 import { TransactionCategoryApi } from "@/accountbook/apis/transactioncategory/TransactionCategoryApi"
 import dayjs from "dayjs"
 import { getSortedIncomeExpenseTypeExternal, IncomeExpenseType } from "@/accountbook/domains/IncomeExpenseType"
 import { Controller, SubmitHandler, useForm } from "react-hook-form"
 import { useEffect } from "react"
 import _ from "lodash"
-import { BudgetCategoryGetAllResponse } from "@/accountbook/apis/budgetcategory/BudgetCategoryApiDomains"
+import { AssetCategoryGetAllResponse } from "@/accountbook/apis/assetcategory/AssetCategoryApiDomains"
 import { TransactionCategoryGetAllResponse } from "@/accountbook/apis/transactioncategory/TransactionCategoryApiDomains"
 import "react-datepicker/dist/react-datepicker.css"
 import DatePicker from "react-datepicker"
@@ -34,7 +34,7 @@ interface TransactionUpsertForm {
   price: string,
   title: string,
   transactionDate: string,
-  budgetCategoryId: string,
+  assetCategoryId: string,
   transactionCategoryId: string,
   incomeExpenseType: IncomeExpenseType,
   isWaste: boolean,
@@ -44,8 +44,8 @@ function toRegisterRequest(form: TransactionUpsertForm): TransactionRegisterRequ
     ...form,
     price: Number(form.price),
     transactionDate: dayjs(form.transactionDate).toDate(),
-    budgetCategoryId: Number(form.budgetCategoryId),
-    transactionCategoryId: Number(form.budgetCategoryId),
+    assetCategoryId: Number(form.assetCategoryId),
+    transactionCategoryId: Number(form.assetCategoryId),
   }
 }
 function toUpdateRequest({ form, id }: { form: TransactionUpsertForm, id: number }): TransactionUpdateRequest {
@@ -53,8 +53,8 @@ function toUpdateRequest({ form, id }: { form: TransactionUpsertForm, id: number
     ...form,
     price: Number(form.price),
     transactionDate: dayjs(form.transactionDate).toDate(),
-    budgetCategoryId: Number(form.budgetCategoryId),
-    transactionCategoryId: Number(form.budgetCategoryId),
+    assetCategoryId: Number(form.assetCategoryId),
+    transactionCategoryId: Number(form.assetCategoryId),
     id: id,
   }
 }
@@ -74,26 +74,26 @@ export default function TransactionDetail({ params }: { params: { id: string | u
 
   const incomeExpenseType = watch("incomeExpenseType")
 
-  const { data: budgetCategories } = useQuery({
+  const { data: assetCategories } = useQuery({
     queryKey: [TransactionCategoryApi.QUERY_KEYS.GET_ALL],
-    queryFn: () => BudgetCategoryApi.getAll(),
+    queryFn: () => AssetCategoryApi.getAll(),
     select: (data) => {
       if (!data.isSuccessAndHasData()) {
         alert(data.message)
         return
       }
-      return (data.data as BudgetCategoryGetAllResponse).list
+      return (data.data as AssetCategoryGetAllResponse).list
     },
   })
   useEffect(() => {
-    const category = _.first(budgetCategories)
+    const category = _.first(assetCategories)
     if (category) {
-      resetField("budgetCategoryId", { defaultValue: String(category.id) })
+      resetField("assetCategoryId", { defaultValue: String(category.id) })
     }
-  }, [budgetCategories, resetField])
+  }, [assetCategories, resetField])
 
   const { data: transactionCategories } = useQuery({
-    queryKey: [BudgetCategoryApi.QUERY_KEYS.GET_ALL],
+    queryKey: [AssetCategoryApi.QUERY_KEYS.GET_ALL],
     queryFn: () => TransactionCategoryApi.getAll(),
     select: (data) => {
       if (!data.isSuccessAndHasData()) {
@@ -128,7 +128,7 @@ export default function TransactionDetail({ params }: { params: { id: string | u
       price: String(transactionDetail.price),
       title: transactionDetail.title,
       transactionDate: DateTimeUtility.toString({ dayjs: dayjs(transactionDetail.date) }),
-      budgetCategoryId: String(transactionDetail.budgetCategoryId),
+      assetCategoryId: String(transactionDetail.assetCategoryId),
       transactionCategoryId: String(transactionDetail.transactionCategoryId),
       incomeExpenseType: transactionDetail.incomeExpenseType,
       isWaste: transactionDetail.isWaste,
@@ -237,28 +237,28 @@ export default function TransactionDetail({ params }: { params: { id: string | u
                 wrapperStyles={{ flex: 1 }}
                 control={ control }
               />
-              <Button onClick={() => router.push("/accountbook/budgetcategory")} style={{ width: "50px" }}>관리</Button>
+              <Button onClick={() => router.push("/accountbook/transactioncategory")} style={{ width: "50px" }}>관리</Button>
             </InputContainer>
           )}
 
-          {budgetCategories && (
+          {assetCategories && (
             <InputContainer style={{display: "flex", gap: "10px"}}>
               <SelectBox
-                name="budgetCategoryId"
+                name="assetCategoryId"
                 items={_.map(
                   (pageType === "UPDATE" && transactionDetail)
                     ? _.uniqBy(
-                      _.concat({id: transactionDetail.budgetCategoryId, name: transactionDetail.budgetCategoryName}, budgetCategories),
+                      _.concat({id: transactionDetail.assetCategoryId, name: transactionDetail.assetCategoryName}, assetCategories),
                       "id",
                     )
-                    : budgetCategories,
+                    : assetCategories,
                   v => ({ label: v.name, value: v.id }),
                 )}
-                placeholder="예산 타입을 등록해주세요"
+                placeholder="자산 타입을 등록해주세요"
                 wrapperStyles={{ flex: 1 }}
                 control={ control }
               />
-              <Button onClick={ () => router.push("/accountbook/transactioncategory") } style={{ width: "50px" }}>관리</Button>
+              <Button onClick={ () => router.push("/accountbook/assetcategory") } style={{ width: "50px" }}>관리</Button>
             </InputContainer>
           )}
 

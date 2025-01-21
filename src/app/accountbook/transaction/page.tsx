@@ -124,7 +124,7 @@ export default function Transactions() {
                       </div>
                       <div style={{display: "flex"}}>
                         <TransactionSubText>{transaction.transactionCategoryName}</TransactionSubText>
-                        <TransactionSubText>{transaction.budgetCategoryName}</TransactionSubText>
+                        <TransactionSubText>{transaction.assetCategoryName}</TransactionSubText>
                         <TransactionSubText>{transaction.isWaste ? "낭비" : ""}</TransactionSubText>
                       </div>
                     </li>

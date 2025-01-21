@@ -1,12 +1,12 @@
 import {
-  BudgetCategoryDeleteRequest,
-  BudgetCategoryGetAllResponseDetail,
-  BudgetCategoryUpdateRequest,
-} from "@/accountbook/apis/budgetcategory/BudgetCategoryApiDomains"
+  TransactionCategoryDeleteRequest,
+  TransactionCategoryGetAllResponseDetail,
+  TransactionCategoryUpdateRequest,
+} from "@/accountbook/apis/transactioncategory/TransactionCategoryApiDomains"
 import { QueryClient, useMutation } from "@tanstack/react-query"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
-import { BudgetCategoryApi } from "@/accountbook/apis/budgetcategory/BudgetCategoryApi"
+import { TransactionCategoryApi } from "@/accountbook/apis/transactioncategory/TransactionCategoryApi"
 import { Input } from "@chakra-ui/react"
 import { Button } from "@/components/ui/button"
 
@@ -14,15 +14,15 @@ interface UpdateDeleteForm {
   id: string,
   name: string,
 }
-function toUpdateRequest(form: UpdateDeleteForm): BudgetCategoryUpdateRequest {
+function toUpdateRequest(form: UpdateDeleteForm): TransactionCategoryUpdateRequest {
   return { ...form, id: Number(form.id) }
 }
-function toDeleteRequest(form: UpdateDeleteForm): BudgetCategoryDeleteRequest {
+function toDeleteRequest(form: UpdateDeleteForm): TransactionCategoryDeleteRequest {
   return { id: Number(form.id) }
 }
 
 export default function CategoryForm(
-  { category, queryClient }: { category: BudgetCategoryGetAllResponseDetail, queryClient: QueryClient }
+  { category, queryClient }: { category: TransactionCategoryGetAllResponseDetail, queryClient: QueryClient }
 ) {
   const [ isFocus, setIsFocus ] = useState(false)
   const [ isButtonClicked, setIsButtonClicked ] = useState(false)
@@ -35,7 +35,7 @@ export default function CategoryForm(
     updateMutation.mutate(data)
   }
   const updateMutation = useMutation({
-    mutationFn: (data: UpdateDeleteForm) => BudgetCategoryApi.update(toUpdateRequest(data)),
+    mutationFn: (data: UpdateDeleteForm) => TransactionCategoryApi.update(toUpdateRequest(data)),
     onSuccess: (data) => {
       if (!data.isSuccess()) {
         alert(data.message)
@@ -43,7 +43,7 @@ export default function CategoryForm(
       }
       setIsButtonClicked(false)
       setIsFocus(false)
-      queryClient.invalidateQueries({ queryKey: [BudgetCategoryApi.QUERY_KEYS.GET_ALL] }).then()
+      queryClient.invalidateQueries({ queryKey: [TransactionCategoryApi.QUERY_KEYS.GET_ALL] }).then()
     },
   })
 
@@ -51,7 +51,7 @@ export default function CategoryForm(
     deleteMutation.mutate(data)
   }
   const deleteMutation = useMutation({
-    mutationFn: (data: UpdateDeleteForm) => BudgetCategoryApi.delete(toDeleteRequest(data)),
+    mutationFn: (data: UpdateDeleteForm) => TransactionCategoryApi.delete(toDeleteRequest(data)),
     onSuccess: (data) => {
       if (!data.isSuccess()) {
         alert(data.message)
@@ -59,7 +59,7 @@ export default function CategoryForm(
       }
       setIsButtonClicked(false)
       setIsFocus(false)
-      queryClient.invalidateQueries({ queryKey: [BudgetCategoryApi.QUERY_KEYS.GET_ALL] }).then()
+      queryClient.invalidateQueries({ queryKey: [TransactionCategoryApi.QUERY_KEYS.GET_ALL] }).then()
     },
   })
 
