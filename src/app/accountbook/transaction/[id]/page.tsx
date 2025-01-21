@@ -28,8 +28,9 @@ import Header from "@/app/accountbook/header/Header"
 import BackButton from "@/app/accountbook/header/BackButton"
 import Title from "@/app/accountbook/header/Title"
 import Container from "@/app/accountbook/Container"
+import { MESSAGE } from "@/common/domains/Messages"
 
-interface TransactionUpsertRequestForm {
+interface TransactionUpsertForm {
   price: string,
   title: string,
   transactionDate: string,
@@ -38,7 +39,7 @@ interface TransactionUpsertRequestForm {
   incomeExpenseType: IncomeExpenseType,
   isWaste: boolean,
 }
-function toRegisterRequest(form: TransactionUpsertRequestForm): TransactionRegisterRequest {
+function toRegisterRequest(form: TransactionUpsertForm): TransactionRegisterRequest {
   return {
     ...form,
     price: Number(form.price),
@@ -47,7 +48,7 @@ function toRegisterRequest(form: TransactionUpsertRequestForm): TransactionRegis
     transactionCategoryId: Number(form.budgetCategoryId),
   }
 }
-function toUpdateRequest({ form, id }: { form: TransactionUpsertRequestForm, id: number }): TransactionUpdateRequest {
+function toUpdateRequest({ form, id }: { form: TransactionUpsertForm, id: number }): TransactionUpdateRequest {
   return {
     ...form,
     price: Number(form.price),
@@ -65,11 +66,13 @@ const InputContainer = styled.div`
 export default function TransactionDetail({ params }: { params: { id: string | undefined } }) {
   const pageType: "REGISTER" | "UPDATE" = params.id === "register" ? "REGISTER" : "UPDATE"
   const router = useRouter()
-  const { handleSubmit, control, reset, resetField, setError, formState: { errors } } = useForm<TransactionUpsertRequestForm>({
+  const { handleSubmit, control, reset, resetField, setError, watch, formState: { errors } } = useForm<TransactionUpsertForm>({
     mode: "onChange",
     defaultValues: { price: "", title: "", transactionDate: DateTimeUtility.toString({ dayjs: dayjs() }),
       incomeExpenseType: IncomeExpenseType.EXPENSE, isWaste: false },
   })
+
+  const incomeExpenseType = watch("incomeExpenseType")
 
   const { data: budgetCategories } = useQuery({
     queryKey: [TransactionCategoryApi.QUERY_KEYS.GET_ALL],
@@ -132,20 +135,20 @@ export default function TransactionDetail({ params }: { params: { id: string | u
     })
   }, [pageType, transactionDetail, reset])
 
-  const validate = (data: TransactionUpsertRequestForm): boolean => {
+  const validate = (data: TransactionUpsertForm): boolean => {
     let isValid = true
     if (StringUtility.isBlank(data.price)) {
       isValid = false
-      setError("price", { type: "required", message: "금액을 입력해주세요" })
+      setError("price", { type: "required", message: MESSAGE.getMessage(MESSAGE.TRANSACTION.INPUT_REQUIRED_PRICE) })
     }
     if (StringUtility.isBlank(data.title)) {
       isValid = false
-      setError("title", { type: "required", message: "내역을 입력해주세요" })
+      setError("title", { type: "required", message: MESSAGE.getMessage(MESSAGE.TRANSACTION.INPUT_REQUIRED_TITLE) })
     }
     return isValid
   }
 
-  const onSubmit: SubmitHandler<TransactionUpsertRequestForm> = (data: TransactionUpsertRequestForm) => {
+  const onSubmit: SubmitHandler<TransactionUpsertForm> = (data: TransactionUpsertForm) => {
     if (!validate(data)) { return }
     const submitData = { ...data, price: data.price.trim(), title: data.title.trim() }
     if (pageType === "REGISTER") {
@@ -158,7 +161,7 @@ export default function TransactionDetail({ params }: { params: { id: string | u
   }
 
   const registerMutation = useMutation({
-    mutationFn: (data: TransactionUpsertRequestForm) => TransactionApi.register(toRegisterRequest(data)),
+    mutationFn: (data: TransactionUpsertForm) => TransactionApi.register(toRegisterRequest(data)),
     onSuccess: (data) => {
       if (!data.isSuccess()) {
         alert(data.message)
@@ -170,7 +173,7 @@ export default function TransactionDetail({ params }: { params: { id: string | u
   })
 
   const updateMutation = useMutation({
-    mutationFn: (data: TransactionUpsertRequestForm) =>
+    mutationFn: (data: TransactionUpsertForm) =>
       TransactionApi.update(toUpdateRequest({ id: Number(params.id), form: data })),
     onSuccess: (data) => {
       if (!data.isSuccess()) {
@@ -185,8 +188,8 @@ export default function TransactionDetail({ params }: { params: { id: string | u
   return (
     <Container>
       <Header>
-        <BackButton/>
-        <Title title={pageType === "REGISTER" ? "내역 등록" : "내역 수정"}/>
+        <BackButton />
+        <Title title={pageType === "REGISTER" ? "내역 등록" : "내역 수정"} />
         <div style={{width: "33%", height: "100%"}}></div>
       </Header>
       <main>
@@ -268,9 +271,11 @@ export default function TransactionDetail({ params }: { params: { id: string | u
             />
           </InputContainer>
 
-          <InputContainer>
-            <ChckboxCard name="isWaste" label="낭비" control={ control } />
-          </InputContainer>
+          { incomeExpenseType === IncomeExpenseType.EXPENSE && (
+            <InputContainer>
+              <ChckboxCard name="isWaste" label="낭비" control={ control } />
+            </InputContainer>
+          )}
 
           <InputContainer
             style={{

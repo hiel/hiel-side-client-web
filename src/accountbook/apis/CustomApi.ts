@@ -22,7 +22,7 @@ interface CustomAxiosRequestConfig extends AxiosRequestConfig {
 function handleError(): Promise<never> {
   alert(MESSAGE.AUTH.RETRY_LOGIN)
   AuthUtility.logout()
-  window.location.href = "/accountbook/auth/login"
+  window.location.href = "/accountbook/auth"
   return Promise.reject()
 }
 

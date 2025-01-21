@@ -4,22 +4,24 @@ import AccountBookNavigation from "@/app/accountbook/AccountBookNavigation"
 import Header from "@/app/accountbook/header/Header"
 import { Image } from "@chakra-ui/react"
 import Container from "@/app/accountbook/Container"
-import { useRouter } from "next/navigation"
+import UserModal from "@/app/accountbook/UserModal"
+import { useState } from "react"
 
 export default function AccountBookHome() {
-  const router = useRouter()
+  const [ isModalOpen, setIsModalOpen ] = useState(false)
 
   return (
     <div>
       <Container>
         <Header>
           <Image
-            onClick={ () => router.push("/accountbook/user/mypage") }
+            onClick={() => setIsModalOpen(!isModalOpen)}
             src="/images/user.png"
-            style={{ position: "absolute", right: 0, width: "40px" }}
+            style={{position: "absolute", right: 0, width: "40px"}}
           />
         </Header>
       </Container>
+      <UserModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
       <AccountBookNavigation />
     </div>
   )

@@ -17,6 +17,8 @@ export default function AccountBookSignupCertificate() {
         alert(data.message)
         router.back()
       }
+      alert("인증이 완료되었습니다.")
+      router.push("/accountbook/auth/login")
     },
   })
 
@@ -29,9 +31,5 @@ export default function AccountBookSignupCertificate() {
     }
   }, [])
 
-  return (
-    <main>
-      <p>인증이 완료되었습니다.</p>
-    </main>
-  )
+  return ( <></> )
 }

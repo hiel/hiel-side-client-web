@@ -1,8 +1,17 @@
 import { defineStyle, Field, Input } from "@chakra-ui/react"
 import { Control, Controller, FieldValues, Path } from "react-hook-form"
 
-export default function InputBox<T extends FieldValues>({ name, control, type, label, placeholder = "", styles = {} }
-  : { name: Path<T>, control: Control<T>, type: "text" | "number", label: string, placeholder?: string, styles?: object }) {
+export default function InputBox<T extends FieldValues>(
+  { name, control, type, label, placeholder = "", styles = {} }
+  : {
+    name: Path<T>,
+    control: Control<T>,
+    type: "text" | "number" | "password" | "email",
+    label: string,
+    placeholder?: string,
+    styles?: object
+  }
+) {
   return (
     <Controller
       name={ name }
@@ -16,6 +25,7 @@ export default function InputBox<T extends FieldValues>({ name, control, type, l
             variant="outline"
             className="peer"
             placeholder={ placeholder }
+            autoComplete="off"
             style={ { borderWidth: "1px" } && styles }
           />
           <Field.Label css={ defineStyle({

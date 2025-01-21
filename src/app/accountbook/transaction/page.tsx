@@ -117,12 +117,10 @@ export default function Transactions() {
                       <div style={{display: "flex"}}>
                         <TransactionText style={{flex: 0.15}}>{transaction.date.substring(6, 8)}</TransactionText>
                         <TransactionText style={{flex: 0.8}}>{transaction.title}</TransactionText>
-                        <TransactionText
-                          style={
-                            {flex: 0.1} &&
-                            (transaction.incomeExpenseType === IncomeExpenseType.INCOME ? {color: "#6C78E0"} : {color: "#E06C6C"})
-                          }
-                        >{transaction.price.toLocaleString("ko")}</TransactionText>
+                        <TransactionText style={{flex: 0.1}}>
+                          {(transaction.incomeExpenseType === IncomeExpenseType.INCOME ? "+" : "-")
+                            + transaction.price.toLocaleString("ko")}
+                        </TransactionText>
                       </div>
                       <div style={{display: "flex"}}>
                         <TransactionSubText>{transaction.transactionCategoryName}</TransactionSubText>

@@ -3,7 +3,7 @@ import { UserType } from "@/common/domains/UserDomains"
 export interface SignupRequest {
   email: string,
   password: string,
-  username: string,
+  name: string,
 }
 
 export interface CertificateSignupRequest {

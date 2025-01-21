@@ -13,7 +13,12 @@ export const MESSAGE = {
     LENGTH_TOO_SHORT_SEARCH_VALUE: "검색어는 최소 %s자 이상이어야 합니다.",
   },
   AUTH: {
+    CONFIRM_PASSWORD_NOT_MATCHED: "확인 비밀번호가 일치하지 않습니다.",
     RETRY_LOGIN: "다시 로그인해주세요.",
+  },
+  TRANSACTION: {
+    INPUT_REQUIRED_PRICE: "금액을 입력해주세요.",
+    INPUT_REQUIRED_TITLE: "내역을 입력해주세요.",
   },
   getMessage: (messageTemplate: string, ...args: (string | number)[]) => {
     return messageTemplate.replace(/%s/g, () => {

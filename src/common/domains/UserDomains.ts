@@ -1,6 +1,5 @@
 export const USER_PASSWORD_MINIMUM_LENGTH = 8
 export const USERNAME_MINIMUM_LENGTH = 2
-export const USER_PROFILE_IMAGE_MAX_FILE_SIZE_MB = 5
 
 export enum UserType {
   MASTER = "MASTER",
