@@ -74,26 +74,8 @@ export default function TransactionDetail({ params }: { params: { id: string | u
 
   const incomeExpenseType = watch("incomeExpenseType")
 
-  const { data: assetCategories } = useQuery({
-    queryKey: [TransactionCategoryApi.QUERY_KEYS.GET_ALL],
-    queryFn: () => AssetCategoryApi.getAll(),
-    select: (data) => {
-      if (!data.isSuccessAndHasData()) {
-        alert(data.message)
-        return
-      }
-      return (data.data as AssetCategoryGetAllResponse).list
-    },
-  })
-  useEffect(() => {
-    const category = _.first(assetCategories)
-    if (category) {
-      resetField("assetCategoryId", { defaultValue: String(category.id) })
-    }
-  }, [assetCategories, resetField])
-
   const { data: transactionCategories } = useQuery({
-    queryKey: [AssetCategoryApi.QUERY_KEYS.GET_ALL],
+    queryKey: [TransactionCategoryApi.QUERY_KEYS.GET_ALL],
     queryFn: () => TransactionCategoryApi.getAll(),
     select: (data) => {
       if (!data.isSuccessAndHasData()) {
@@ -109,6 +91,24 @@ export default function TransactionDetail({ params }: { params: { id: string | u
       resetField("transactionCategoryId", { defaultValue: String(category.id) })
     }
   }, [transactionCategories, resetField])
+
+  const { data: assetCategories } = useQuery({
+    queryKey: [AssetCategoryApi.QUERY_KEYS.GET_ALL],
+    queryFn: () => AssetCategoryApi.getAll(),
+    select: (data) => {
+      if (!data.isSuccessAndHasData()) {
+        alert(data.message)
+        return
+      }
+      return (data.data as AssetCategoryGetAllResponse).list
+    },
+  })
+  useEffect(() => {
+    const category = _.first(assetCategories)
+    if (category) {
+      resetField("assetCategoryId", { defaultValue: String(category.id) })
+    }
+  }, [assetCategories, resetField])
 
   const { data: transactionDetail } = useQuery({
     queryKey: [TransactionApi.QUERY_KEYS.GET_DETAIL, params.id],
