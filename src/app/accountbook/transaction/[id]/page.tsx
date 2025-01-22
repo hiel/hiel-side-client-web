@@ -226,8 +226,11 @@ export default function TransactionDetail({ params }: { params: { id: string | u
                 items={_.map(
                   (pageType === "UPDATE" && transactionDetail)
                     ? _.uniqBy(
-                      _.concat({id: transactionDetail.transactionCategoryId, name: transactionDetail.transactionCategoryName},
-                        transactionCategories),
+                      _.concat({
+                        id: transactionDetail.transactionCategoryId,
+                        name: transactionDetail.transactionCategoryName,
+                        budgetPrice: transactionDetail.transactionCategoryBudgetPrice,
+                      }, transactionCategories),
                       "id",
                     )
                     : transactionCategories,
@@ -248,7 +251,11 @@ export default function TransactionDetail({ params }: { params: { id: string | u
                 items={_.map(
                   (pageType === "UPDATE" && transactionDetail)
                     ? _.uniqBy(
-                      _.concat({id: transactionDetail.assetCategoryId, name: transactionDetail.assetCategoryName}, assetCategories),
+                      _.concat({
+                        id: transactionDetail.assetCategoryId,
+                        name: transactionDetail.assetCategoryName,
+                        budgetPrice: transactionDetail.assetCategoryBudgetPrice,
+                      }, assetCategories),
                       "id",
                     )
                     : assetCategories,

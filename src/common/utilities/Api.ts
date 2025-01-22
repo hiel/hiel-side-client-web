@@ -4,12 +4,12 @@ import { DATETIME_FORMAT, DateTimeUtility } from "@/common/utilities/DateTimeUti
 import _ from "lodash"
 import dayjs from "dayjs"
 
-type RequestDataType = number | string | boolean | Date
+type RequestDataType = number | string | boolean | null | Date
 type RequestDataRecordType = Record<string, RequestDataType>
 
 function convertData(data: RequestDataType): string {
   return (data instanceof Date) ?
-    DateTimeUtility.toString({ dayjs: dayjs(data), format: DATETIME_FORMAT.DATETIME_TIMEZONE }) : data.toString()
+    DateTimeUtility.toString({ dayjs: dayjs(data), format: DATETIME_FORMAT.DATETIME_TIMEZONE }) : String(data)
 }
 
 export class Api {

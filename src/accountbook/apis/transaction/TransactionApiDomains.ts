@@ -37,8 +37,10 @@ export interface TransactionGetDetailResponse {
   title: string,
   assetCategoryId: number,
   assetCategoryName: string,
+  assetCategoryBudgetPrice: number | null,
   transactionCategoryId: number,
   transactionCategoryName: string,
+  transactionCategoryBudgetPrice: number | null,
   incomeExpenseType: IncomeExpenseType,
   isWaste: boolean,
 }

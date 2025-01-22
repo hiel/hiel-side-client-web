@@ -1,10 +1,12 @@
 export interface AssetCategoryRegisterRequest {
   name: string,
+  budgetPrice?: number | null,
 }
 
 export interface AssetCategoryUpdateRequest {
   id: number,
   name: string,
+  budgetPrice?: number | null,
 }
 
 export interface AssetCategoryDeleteRequest {
@@ -18,4 +20,5 @@ export interface AssetCategoryGetAllResponse {
 export interface AssetCategoryGetAllResponseDetail {
   id: number,
   name: string,
+  budgetPrice: number | null,
 }

@@ -17,9 +17,10 @@ import { AssetCategoryGetAllResponse } from "@/accountbook/apis/assetcategory/As
 
 interface RegisterForm {
   name: string,
+  budgetPrice?: number,
 }
 
-export default function TransactionCategory() {
+export default function AssetCategory() {
   const queryClient = useQueryClient()
   const [ isFocus, setIsFocus ] = useState(false)
   const [ isButtonClicked, setIsButtonClicked ] = useState(false)
@@ -59,6 +60,7 @@ export default function TransactionCategory() {
       setIsButtonClicked(false)
       setIsFocus(false)
       setValue("name", "")
+      setValue("budgetPrice", undefined)
       queryClient.invalidateQueries({ queryKey: [AssetCategoryApi.QUERY_KEYS.GET_ALL] }).then()
     },
   })
@@ -77,28 +79,41 @@ export default function TransactionCategory() {
               <CategoryForm category={category} queryClient={queryClient} key={category.id} />
             ))}
           </>)}
-          <form style={{flex: 1}}>
+          <form
+            onFocus={() => setIsFocus(true)}
+            onBlur={e => {
+              if (!e.currentTarget.contains(e.relatedTarget as Node) && !isButtonClicked) {
+                setIsFocus(false)
+                setValue("name", "")
+                setValue("budgetPrice", undefined)
+              }
+            }}
+            style={{flex: 1}}
+          >
             <Input
               type="text"
-              onFocus={() => setIsFocus(true)}
-              {...register("name", {
-                onBlur: () => {
-                  if (!isButtonClicked) {
-                    setIsFocus(false)
-                  }
-                },
-              })}
-              placeholder="추가"
+              {...register("name")}
+              placeholder={isFocus ? "이름" : "추가"}
               style={{textAlign: "center"}}
               autoComplete="off"
             />
-            {isFocus && (<div style={{marginTop: "8px"}}>
+            {isFocus && (<>
+              <div style={{display: "flex", alignItems: "center", marginTop: "8px"}}>
+                <span style={{width: "20%", minWidth: "40px", textAlign: "center", fontSize: "14px"}}>예산</span>
+                <Input
+                  type="text"
+                  {...register("budgetPrice")}
+                  placeholder="선택 입력"
+                  style={{flex: 1, textAlign: "center"}}
+                  autoComplete="off"
+                />
+              </div>
               <Button
                 onMouseDown={() => setIsButtonClicked(true)}
                 onClick={handleSubmit(f => onRegisterSubmit(f))}
-                style={{width: "100%"}}
+                style={{marginTop: "8px", width: "100%"}}
               >저장</Button>
-            </div>)}
+            </>)}
           </form>
         </div>
       </main>
