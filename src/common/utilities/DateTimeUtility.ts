@@ -1,4 +1,4 @@
-import { Dayjs } from "dayjs"
+import dayjs, { Dayjs } from "dayjs"
 
 export enum DATETIME_FORMAT {
   DATETIME = "YYYY-MM-DD HH:mm:ss",
@@ -7,6 +7,10 @@ export enum DATETIME_FORMAT {
 }
 
 export class DateTimeUtility {
+  static toDate(datetimeString: string): Dayjs {
+    return dayjs(datetimeString)
+  }
+
   static toString({ dayjs, format = DATETIME_FORMAT.DATETIME }: { dayjs: Dayjs, format?: DATETIME_FORMAT }): string {
     return dayjs.format(format)
   }

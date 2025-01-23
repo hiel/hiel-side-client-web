@@ -48,12 +48,13 @@ export interface TransactionGetDetailResponse {
 export interface TransactionGetSliceRequest {
   page: number,
   pageSize: number,
-  transactionDatetime?: Date,
+  date?: string,
 }
 
 export interface TransactionGetSliceResponse {
   slice: SliceResponseData<TransactionGetSliceResponseDetail>,
-  transactionDatetime: string,
+  transactionMonthlyRange: string[],
+  transactionStartDay: number,
 }
 
 interface TransactionGetSliceResponseDetail {

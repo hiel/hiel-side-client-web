@@ -16,6 +16,7 @@ import { Button, Image } from "@chakra-ui/react"
 import { hasContent } from "@/common/apis/ApiDomains"
 import { useRouter, useSearchParams } from "next/navigation"
 import Container from "@/app/accountbook/Container"
+import { DATETIME_FORMAT, DateTimeUtility } from "@/common/utilities/DateTimeUtility"
 
 const TransactionText = styled.span`
   display: inline-flex;
@@ -32,15 +33,15 @@ const TransactionSubText = styled.span`
 
 export default function Transactions() {
   const router = useRouter()
-  const yearMonth = useSearchParams().get("yearMonth")
+  const date = useSearchParams().get("date")
 
   const { data: transactions, fetchNextPage, hasNextPage } = useInfiniteQuery({
-    queryKey: [TransactionApi.QUERY_KEYS.GET_SLICE, yearMonth],
+    queryKey: [TransactionApi.QUERY_KEYS.GET_SLICE, date],
     queryFn: async ({ pageParam }) => {
       const response = await TransactionApi.getSlice({
         page: pageParam,
         pageSize: 30,
-        ...(yearMonth !== null && { transactionDateTime: new Date(yearMonth) }),
+        ...(date !== null && { date: date }),
       })
       if (!response.isSuccessAndHasData()) {
         alert(response.message)
@@ -54,17 +55,14 @@ export default function Transactions() {
     },
   })
 
-  const getYearMonth = () => dayjs(transactions!.pages[0]!.transactionDatetime)
-
-  const isFutureAfter = ({ month }: { month: number }) =>
-    dayjs(getYearMonth()).subtract(month, "month").startOf("month").isBefore(dayjs().startOf("month"))
-
   return (
     <Container>
       <Header>
         <BackButton url="/accountbook"/>
         <Title title="내역"/>
-        <div style={{ width: "33%", height: "100%" }}></div>
+        {transactions && QueryUtility.isInfiniteLoaded(transactions) && (
+          <div style={{ width: "33%", height: "100%", fontSize: "14px" }}>시작일: {transactions.pages[0]!.transactionStartDay}</div>
+        )}
       </Header>
       <main>
         {transactions && QueryUtility.isInfiniteLoaded(transactions) && (<>
@@ -82,17 +80,30 @@ export default function Transactions() {
           >
             <Image
               src="/images/left-arrow.png"
-              onClick={() => router.push(`/accountbook/transaction?yearMonth=${getYearMonth().add(-1, "month").format("YYYY-MM")}`)}
+              onClick={() => router.push(
+                "/accountbook/transaction?date="
+                + DateTimeUtility.toString({
+                  dayjs: DateTimeUtility.toDate(transactions.pages[0]!.transactionMonthlyRange[0]).subtract(1, "day"),
+                  format: DATETIME_FORMAT.DATE,
+                })
+              )}
               style={{position: "absolute", left: 0, width: "15px"}}
             />
-            <h1 style={{textAlign: "center", flexGrow: 1}}>{dayjs(transactions.pages[0]!.transactionDatetime).format("YY년 MM월")}</h1>
-            {isFutureAfter({month: 1}) ? (
-              <Image
-                src="/images/right-arrow.png"
-                onClick={() => router.push(`/accountbook/transaction?yearMonth=${getYearMonth().add(1, "month").format("YYYY-MM")}`)}
-                style={{position: "absolute", right: 0, width: "15px"}}
-              />
-            ) : <></>}
+            <h1 style={{textAlign: "center", flexGrow: 1}}>
+              {dayjs(transactions.pages[0]!.transactionMonthlyRange[0]).format("YY.MM.DD")
+                + " ~ " + dayjs(transactions.pages[0]!.transactionMonthlyRange[1]).format("MM.DD")}
+            </h1>
+            <Image
+              src="/images/right-arrow.png"
+              onClick={() => router.push(
+                "/accountbook/transaction?date="
+                + DateTimeUtility.toString({
+                  dayjs: DateTimeUtility.toDate(transactions.pages[0]!.transactionMonthlyRange[1]).add(1, "day"),
+                  format: DATETIME_FORMAT.DATE,
+                })
+              )}
+              style={{position: "absolute", right: 0, width: "15px"}}
+            />
           </div>
 
           {hasContent(_.first(transactions.pages)!.slice) ? (
@@ -115,7 +126,9 @@ export default function Transactions() {
                       key={index}
                     >
                       <div style={{display: "flex"}}>
-                        <TransactionText style={{flex: 0.15}}>{transaction.date.substring(6, 8)}</TransactionText>
+                        <TransactionText style={{flex: 0.25}}>
+                          {`${DateTimeUtility.toDate(transaction.date).month() + 1}.${DateTimeUtility.toDate(transaction.date).date()}`}
+                        </TransactionText>
                         <TransactionText style={{flex: 0.8}}>{transaction.title}</TransactionText>
                         <TransactionText style={{flex: 0.1}}>
                           {(transaction.incomeExpenseType === IncomeExpenseType.INCOME ? "+" : "-")
