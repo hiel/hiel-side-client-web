@@ -22,9 +22,5 @@ interface HomeGetResponseAssetCategoryDetail {
 interface HomeGetResponseTransactionCategoryDetail {
   id: number,
   name: string,
-  budget?: number,
   totalExpense: number,
-  balance?: number,
-  availableExpensePricePerDay?: number,
-  isFine?: boolean,
 }

@@ -10,7 +10,6 @@ import { MESSAGE } from "@/common/domains/Messages"
 interface UpdateDeleteForm {
   id: number,
   name: string,
-  budgetPrice: number | null,
 }
 
 export default function TransactionCategoryForm(
@@ -82,16 +81,6 @@ export default function TransactionCategoryForm(
         autoComplete="off"
       />
       {isFocus && (<>
-        <div style={{display: "flex", alignItems: "center", marginTop: "8px"}}>
-          <span style={{width: "20%", minWidth: "40px", textAlign: "center", fontSize: "14px"}}>예산</span>
-          <Input
-            type="text"
-            {...register("budgetPrice")}
-            placeholder="선택 입력"
-            style={{flex: 1, textAlign: "center"}}
-            autoComplete="off"
-          />
-        </div>
         <div onMouseDown={() => setIsButtonClicked(true)} style={{display: "flex", gap: "10px", marginTop: "8px"}}>
           <Button
             onClick={handleSubmit(f => onUpdateSubmit(f))}

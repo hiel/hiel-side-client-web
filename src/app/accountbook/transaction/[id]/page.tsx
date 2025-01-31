@@ -47,7 +47,7 @@ function toRegisterRequest(form: TransactionUpsertForm): TransactionRegisterRequ
     transactionCategoryId: Number(form.assetCategoryId),
   }
 }
-function toUpdateRequest({ form, id }: { form: TransactionUpsertForm, id: number }): TransactionUpdateRequest {
+function toUpdateRequest({form, id}: {form: TransactionUpsertForm, id: number}): TransactionUpdateRequest {
   return {
     ...form,
     price: Number(form.price),
@@ -62,18 +62,18 @@ const InputContainer = styled.div`
   margin-bottom: 13px;
 `
 
-export default function TransactionDetail({ params }: { params: { id: string | undefined } }) {
+export default function TransactionDetail({params}: {params: {id: string | undefined}}) {
   const pageType: "REGISTER" | "UPDATE" = params.id === "register" ? "REGISTER" : "UPDATE"
   const router = useRouter()
-  const { handleSubmit, control, reset, resetField, setError, watch, formState: { errors } } = useForm<TransactionUpsertForm>({
+  const {handleSubmit, control, reset, resetField, setError, watch, formState: {errors}} = useForm<TransactionUpsertForm>({
     mode: "onChange",
-    defaultValues: { price: "", title: "", transactionDate: DateTimeUtility.toString({ dayjs: dayjs() }),
-      incomeExpenseType: IncomeExpenseType.EXPENSE, isWaste: false },
+    defaultValues: {price: "", title: "", transactionDate: DateTimeUtility.toString({dayjs: dayjs()}),
+      incomeExpenseType: IncomeExpenseType.EXPENSE, isWaste: false},
   })
 
   const incomeExpenseType = watch("incomeExpenseType")
 
-  const { data: transactionCategories } = useQuery({
+  const {data: transactionCategories} = useQuery({
     queryKey: [TransactionCategoryApi.QUERY_KEYS.GET_ALL],
     queryFn: () => TransactionCategoryApi.getAll(),
     select: data => data.validateAndGetData()?.list,
@@ -81,11 +81,11 @@ export default function TransactionDetail({ params }: { params: { id: string | u
   useEffect(() => {
     const category = _.first(transactionCategories)
     if (category) {
-      resetField("transactionCategoryId", { defaultValue: String(category.id) })
+      resetField("transactionCategoryId", {defaultValue: String(category.id)})
     }
   }, [transactionCategories, resetField])
 
-  const { data: assetCategories } = useQuery({
+  const {data: assetCategories} = useQuery({
     queryKey: [AssetCategoryApi.QUERY_KEYS.GET_ALL],
     queryFn: () => AssetCategoryApi.getAll(),
     select: data => data.validateAndGetData()?.list,
@@ -93,22 +93,22 @@ export default function TransactionDetail({ params }: { params: { id: string | u
   useEffect(() => {
     const category = _.first(assetCategories)
     if (category) {
-      resetField("assetCategoryId", { defaultValue: String(category.id) })
+      resetField("assetCategoryId", {defaultValue: String(category.id)})
     }
   }, [assetCategories, resetField])
 
-  const { data: transactionDetail } = useQuery({
+  const {data: transactionDetail} = useQuery({
     queryKey: [TransactionApi.QUERY_KEYS.GET_DETAIL, params.id],
-    queryFn: () => TransactionApi.getDetail({ id: Number(params.id) }),
+    queryFn: () => TransactionApi.getDetail({id: Number(params.id)}),
     select: data => data.validateAndGetData(),
     enabled: pageType === "UPDATE",
   })
   useEffect(() => {
-    if (pageType !== "UPDATE" || !transactionDetail) { return }
+    if (pageType !== "UPDATE" || !transactionDetail) {return}
     reset({
       price: String(transactionDetail.price),
       title: transactionDetail.title,
-      transactionDate: DateTimeUtility.toString({ dayjs: dayjs(transactionDetail.date) }),
+      transactionDate: DateTimeUtility.toString({dayjs: dayjs(transactionDetail.date)}),
       assetCategoryId: String(transactionDetail.assetCategoryId),
       transactionCategoryId: String(transactionDetail.transactionCategoryId),
       incomeExpenseType: transactionDetail.incomeExpenseType,
@@ -120,18 +120,18 @@ export default function TransactionDetail({ params }: { params: { id: string | u
     let isValid = true
     if (StringUtility.isBlank(data.price)) {
       isValid = false
-      setError("price", { type: "required", message: MESSAGE.getMessage(MESSAGE.TRANSACTION.INPUT_REQUIRED_PRICE) })
+      setError("price", {type: "required", message: MESSAGE.getMessage(MESSAGE.TRANSACTION.INPUT_REQUIRED_PRICE)})
     }
     if (StringUtility.isBlank(data.title)) {
       isValid = false
-      setError("title", { type: "required", message: MESSAGE.getMessage(MESSAGE.TRANSACTION.INPUT_REQUIRED_TITLE) })
+      setError("title", {type: "required", message: MESSAGE.getMessage(MESSAGE.TRANSACTION.INPUT_REQUIRED_TITLE)})
     }
     return isValid
   }
 
   const onSubmit: SubmitHandler<TransactionUpsertForm> = (data: TransactionUpsertForm) => {
-    if (!validate(data)) { return }
-    const submitData = { ...data, price: data.price.trim(), title: data.title.trim() }
+    if (!validate(data)) {return}
+    const submitData = {...data, price: data.price.trim(), title: data.title.trim()}
     if (pageType === "REGISTER") {
       registerMutation.mutate(submitData)
     } else {
@@ -155,7 +155,7 @@ export default function TransactionDetail({ params }: { params: { id: string | u
 
   const updateMutation = useMutation({
     mutationFn: (data: TransactionUpsertForm) =>
-      TransactionApi.update(toUpdateRequest({ id: Number(params.id), form: data })),
+      TransactionApi.update(toUpdateRequest({id: Number(params.id), form: data})),
     onSuccess: (data) => {
       if (!data.isSuccess()) {
         alert(data.message)
@@ -176,24 +176,24 @@ export default function TransactionDetail({ params }: { params: { id: string | u
       <main>
         <form onSubmit={handleSubmit(onSubmit)}>
           <InputContainer style={{marginTop: "10px"}}>
-            <InputBox name="price" type="number" label="금액" control={ control } />
-            <ErrorMessage message={ errors.price?.message }/>
+            <InputBox name="price" type="number" label="금액" control={control} />
+            <ErrorMessage message={errors.price?.message}/>
           </InputContainer>
 
           <InputContainer>
-            <InputBox name="title" type="text" label="내역" control={ control } />
-            <ErrorMessage message={ errors.title?.message }/>
+            <InputBox name="title" type="text" label="내역" control={control} />
+            <ErrorMessage message={errors.title?.message}/>
           </InputContainer>
 
           <InputContainer>
             <Controller
               name="transactionDate"
-              control={ control }
-              render={({field: { value, onChange }}) => (
+              control={control}
+              render={({field: {value, onChange}}) => (
                 <DatePicker
-                  selected={ dayjs(value).toDate() }
-                  onChange={ v => onChange(DateTimeUtility.toString({dayjs: dayjs(v)})) }
-                  maxDate={ dayjs().add(1, "month").endOf("month").toDate() }
+                  selected={dayjs(value).toDate()}
+                  onChange={v => onChange(DateTimeUtility.toString({dayjs: dayjs(v)}))}
+                  maxDate={dayjs().add(1, "month").endOf("month").toDate()}
                   dateFormat="yyyy. MM. dd"
                 />
               )}
@@ -201,7 +201,7 @@ export default function TransactionDetail({ params }: { params: { id: string | u
           </InputContainer>
 
           {transactionCategories && (
-            <InputContainer style={{ display: "flex", gap: "10px" }}>
+            <InputContainer style={{display: "flex", gap: "10px"}}>
               <SelectBox
                 name="transactionCategoryId"
                 items={_.map(
@@ -210,18 +210,17 @@ export default function TransactionDetail({ params }: { params: { id: string | u
                       _.concat({
                         id: transactionDetail.transactionCategoryId,
                         name: transactionDetail.transactionCategoryName,
-                        budgetPrice: transactionDetail.transactionCategoryBudgetPrice,
                       }, transactionCategories),
                       "id",
                     )
                     : transactionCategories,
-                  v => ({ label: v.name, value: v.id }),
+                  v => ({label: v.name, value: v.id}),
                 )}
                 placeholder="내역 타입을 등록해주세요"
-                wrapperStyles={{ flex: 1 }}
-                control={ control }
+                wrapperStyles={{flex: 1}}
+                control={control}
               />
-              <Button onClick={() => router.push("/accountbook/transactioncategory")} style={{ width: "50px" }}>관리</Button>
+              <Button onClick={() => router.push("/accountbook/transactioncategory")} style={{width: "50px"}}>관리</Button>
             </InputContainer>
           )}
 
@@ -238,15 +237,14 @@ export default function TransactionDetail({ params }: { params: { id: string | u
                         budgetPrice: transactionDetail.assetCategoryBudgetPrice,
                       }, assetCategories),
                       "id",
-                    )
-                    : assetCategories,
-                  v => ({ label: v.name, value: v.id }),
+                    ) : assetCategories,
+                  v => ({label: v.name, value: v.id}),
                 )}
                 placeholder="자산 타입을 등록해주세요"
-                wrapperStyles={{ flex: 1 }}
-                control={ control }
+                wrapperStyles={{flex: 1}}
+                control={control}
               />
-              <Button onClick={ () => router.push("/accountbook/assetcategory") } style={{ width: "50px" }}>관리</Button>
+              <Button onClick={() => router.push("/accountbook/assetcategory")} style={{width: "50px"}}>관리</Button>
             </InputContainer>
           )}
 

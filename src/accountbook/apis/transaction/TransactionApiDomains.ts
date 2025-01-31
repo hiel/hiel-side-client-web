@@ -40,7 +40,6 @@ export interface TransactionGetDetailResponse {
   assetCategoryBudgetPrice: number | null,
   transactionCategoryId: number,
   transactionCategoryName: string,
-  transactionCategoryBudgetPrice: number | null,
   incomeExpenseType: IncomeExpenseType,
   isWaste: boolean,
 }

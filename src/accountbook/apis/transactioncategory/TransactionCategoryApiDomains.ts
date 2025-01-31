@@ -1,12 +1,10 @@
 export interface TransactionCategoryRegisterRequest {
   name: string,
-  budgetPrice?: number | null,
 }
 
 export interface TransactionCategoryUpdateRequest {
   id: number,
   name: string,
-  budgetPrice?: number | null,
 }
 
 export interface TransactionCategoryDeleteRequest {
@@ -20,5 +18,4 @@ export interface TransactionCategoryGetAllResponse {
 export interface TransactionCategoryGetAllResponseDetail {
   id: number,
   name: string,
-  budgetPrice: number | null,
 }

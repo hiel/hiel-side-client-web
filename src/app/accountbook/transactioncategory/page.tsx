@@ -16,7 +16,6 @@ import { MESSAGE } from "@/common/domains/Messages"
 
 interface RegisterForm {
   name: string,
-  budgetPrice?: number,
 }
 
 export default function TransactionCategory() {
@@ -53,7 +52,6 @@ export default function TransactionCategory() {
       setIsButtonClicked(false)
       setIsFocus(false)
       setValue("name", "")
-      setValue("budgetPrice", undefined)
       queryClient.invalidateQueries({queryKey: [TransactionCategoryApi.QUERY_KEYS.GET_ALL]}).then()
     },
   })
@@ -78,7 +76,6 @@ export default function TransactionCategory() {
               if (!e.currentTarget.contains(e.relatedTarget as Node) && !isButtonClicked) {
                 setIsFocus(false)
                 setValue("name", "")
-                setValue("budgetPrice", undefined)
               }
             }}
             style={{flex: 1}}
@@ -91,16 +88,6 @@ export default function TransactionCategory() {
               autoComplete="off"
             />
             {isFocus && (<>
-              <div style={{display: "flex", alignItems: "center", marginTop: "8px"}}>
-                <span style={{width: "20%", minWidth: "40px", textAlign: "center", fontSize: "14px"}}>예산</span>
-                <Input
-                  type="text"
-                  {...register("budgetPrice")}
-                  placeholder="선택 입력"
-                  style={{flex: 1, textAlign: "center"}}
-                  autoComplete="off"
-                />
-              </div>
               <Button
                 onMouseDown={() => setIsButtonClicked(true)}
                 onClick={handleSubmit(f => onRegisterSubmit(f))}
