@@ -10,3 +10,7 @@ export interface UpdateTransactionStartDayRequest {
 export interface UpdateTransactionStartDayResponse {
   transactionStartDay: number,
 }
+
+export interface GetUserResponse {
+  transactionStartDay: number,
+}

@@ -16,11 +16,11 @@ interface UpdateDeleteForm {
 export default function TransactionCategoryForm(
   { category, queryClient }: { category: TransactionCategoryGetAllResponseDetail, queryClient: QueryClient }
 ) {
-  const [ isFocus, setIsFocus ] = useState(false)
-  const [ isButtonClicked, setIsButtonClicked ] = useState(false)
-  const { register, handleSubmit, reset } = useForm<UpdateDeleteForm>({
+  const [isFocus, setIsFocus] = useState(false)
+  const [isButtonClicked, setIsButtonClicked] = useState(false)
+  const {register, handleSubmit, reset} = useForm<UpdateDeleteForm>({
     mode: "onChange",
-    defaultValues: { ...category },
+    defaultValues: {...category},
   })
 
   const validate = (data: UpdateDeleteForm): boolean => {

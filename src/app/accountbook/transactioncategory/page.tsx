@@ -21,11 +21,11 @@ interface RegisterForm {
 
 export default function TransactionCategory() {
   const queryClient = useQueryClient()
-  const [ isFocus, setIsFocus ] = useState(false)
-  const [ isButtonClicked, setIsButtonClicked ] = useState(false)
-  const { register, handleSubmit, setValue } = useForm<RegisterForm>({ mode: "onChange" })
+  const [isFocus, setIsFocus] = useState(false)
+  const [isButtonClicked, setIsButtonClicked] = useState(false)
+  const {register, handleSubmit, setValue} = useForm<RegisterForm>({ mode: "onChange" })
 
-  const { data: categories } = useQuery({
+  const {data: categories} = useQuery({
     queryKey: [TransactionCategoryApi.QUERY_KEYS.GET_ALL],
     queryFn: () => TransactionCategoryApi.getAll(),
     select: data => data.validateAndGetData()?.list,
@@ -54,7 +54,7 @@ export default function TransactionCategory() {
       setIsFocus(false)
       setValue("name", "")
       setValue("budgetPrice", undefined)
-      queryClient.invalidateQueries({ queryKey: [TransactionCategoryApi.QUERY_KEYS.GET_ALL] }).then()
+      queryClient.invalidateQueries({queryKey: [TransactionCategoryApi.QUERY_KEYS.GET_ALL]}).then()
     },
   })
 
@@ -81,7 +81,7 @@ export default function TransactionCategory() {
                 setValue("budgetPrice", undefined)
               }
             }}
-            style={{ flex: 1 }}
+            style={{flex: 1}}
           >
             <Input
               type="text"

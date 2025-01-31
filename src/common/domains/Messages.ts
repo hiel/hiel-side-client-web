@@ -17,6 +17,9 @@ export const MESSAGE = {
     CONFIRM_PASSWORD_NOT_MATCHED: "확인 비밀번호가 일치하지 않습니다.",
     RETRY_LOGIN: "다시 로그인해주세요.",
   },
+  USER: {
+    INPUT_REQUIRED_START_DAY: "시작일을 입력해주세요.",
+  },
   TRANSACTION: {
     INPUT_REQUIRED_PRICE: "금액을 입력해주세요.",
     INPUT_REQUIRED_TITLE: "내역을 입력해주세요.",
