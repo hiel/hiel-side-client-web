@@ -9,11 +9,10 @@ import { useForm } from "react-hook-form"
 import { Input } from "@chakra-ui/react"
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
-import CategoryForm from "@/app/accountbook/assetcategory/CategoryForm"
-import Container from "@/app/accountbook/Container"
+import AssetCategoryForm from "@/app/accountbook/assetcategory/AssetCategoryForm"
+import Container from "@/components/Container"
 import { MESSAGE } from "@/common/domains/Messages"
 import { AssetCategoryApi } from "@/accountbook/apis/assetcategory/AssetCategoryApi"
-import { AssetCategoryGetAllResponse } from "@/accountbook/apis/assetcategory/AssetCategoryApiDomains"
 
 interface RegisterForm {
   name: string,
@@ -29,13 +28,7 @@ export default function AssetCategory() {
   const { data: categories } = useQuery({
     queryKey: [AssetCategoryApi.QUERY_KEYS.GET_ALL],
     queryFn: () => AssetCategoryApi.getAll(),
-    select: (data) => {
-      if (!data.isSuccessAndHasData()) {
-        alert(data.message)
-        return
-      }
-      return (data.data as AssetCategoryGetAllResponse).list
-    },
+    select: data => data.validateAndGetData()?.list,
   })
 
   const validate = (data: RegisterForm): boolean => {
@@ -76,7 +69,7 @@ export default function AssetCategory() {
         <div style={{display: "flex", flexDirection: "column", gap: "8px"}}>
           {categories && (<>
             {_.map(categories, category => (
-              <CategoryForm category={category} queryClient={queryClient} key={category.id} />
+              <AssetCategoryForm category={category} queryClient={queryClient} key={category.id} />
             ))}
           </>)}
           <form

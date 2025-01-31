@@ -1,8 +1,8 @@
-import { AssetCategoryGetAllResponseDetail } from "@/accountbook/apis/assetcategory/AssetCategoryApiDomains"
+import { TransactionCategoryGetAllResponseDetail } from "@/accountbook/apis/transactioncategory/TransactionCategoryApiDomains"
 import { QueryClient, useMutation } from "@tanstack/react-query"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
-import { AssetCategoryApi } from "@/accountbook/apis/assetcategory/AssetCategoryApi"
+import { TransactionCategoryApi } from "@/accountbook/apis/transactioncategory/TransactionCategoryApi"
 import { Input } from "@chakra-ui/react"
 import { Button } from "@/components/ui/button"
 import { MESSAGE } from "@/common/domains/Messages"
@@ -13,8 +13,8 @@ interface UpdateDeleteForm {
   budgetPrice: number | null,
 }
 
-export default function CategoryForm(
-  { category, queryClient }: { category: AssetCategoryGetAllResponseDetail, queryClient: QueryClient }
+export default function TransactionCategoryForm(
+  { category, queryClient }: { category: TransactionCategoryGetAllResponseDetail, queryClient: QueryClient }
 ) {
   const [ isFocus, setIsFocus ] = useState(false)
   const [ isButtonClicked, setIsButtonClicked ] = useState(false)
@@ -36,7 +36,7 @@ export default function CategoryForm(
     updateMutation.mutate(data)
   }
   const updateMutation = useMutation({
-    mutationFn: (data: UpdateDeleteForm) => AssetCategoryApi.update(data),
+    mutationFn: (data: UpdateDeleteForm) => TransactionCategoryApi.update(data),
     onSuccess: (data) => {
       if (!data.isSuccess()) {
         alert(data.message)
@@ -44,7 +44,7 @@ export default function CategoryForm(
       }
       setIsButtonClicked(false)
       setIsFocus(false)
-      queryClient.invalidateQueries({ queryKey: [AssetCategoryApi.QUERY_KEYS.GET_ALL] }).then()
+      queryClient.invalidateQueries({ queryKey: [TransactionCategoryApi.QUERY_KEYS.GET_ALL] }).then()
     },
   })
 
@@ -52,7 +52,7 @@ export default function CategoryForm(
     deleteMutation.mutate(data)
   }
   const deleteMutation = useMutation({
-    mutationFn: (data: UpdateDeleteForm) => AssetCategoryApi.delete(data),
+    mutationFn: (data: UpdateDeleteForm) => TransactionCategoryApi.delete(data),
     onSuccess: (data) => {
       if (!data.isSuccess()) {
         alert(data.message)
@@ -60,7 +60,7 @@ export default function CategoryForm(
       }
       setIsButtonClicked(false)
       setIsFocus(false)
-      queryClient.invalidateQueries({ queryKey: [AssetCategoryApi.QUERY_KEYS.GET_ALL] }).then()
+      queryClient.invalidateQueries({ queryKey: [TransactionCategoryApi.QUERY_KEYS.GET_ALL] }).then()
     },
   })
 

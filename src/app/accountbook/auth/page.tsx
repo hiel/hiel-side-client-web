@@ -1,6 +1,6 @@
 "use client"
 
-import Container from "@/app/accountbook/Container"
+import Container from "@/components/Container"
 import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
 

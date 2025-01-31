@@ -7,7 +7,6 @@ import dayjs from "dayjs"
 import styled from "styled-components"
 import { IncomeExpenseType } from "@/accountbook/domains/IncomeExpenseType"
 import { QueryUtility } from "@/common/utilities/QueryUtility"
-import { TransactionGetSliceResponse } from "@/accountbook/apis/transaction/TransactionApiDomains"
 import _ from "lodash"
 import BackButton from "@/app/accountbook/header/BackButton"
 import Title from "@/app/accountbook/header/Title"
@@ -15,8 +14,9 @@ import Header from "@/app/accountbook/header/Header"
 import { Button, Image } from "@chakra-ui/react"
 import { hasContent } from "@/common/apis/ApiDomains"
 import { useRouter, useSearchParams } from "next/navigation"
-import Container from "@/app/accountbook/Container"
+import Container from "@/components/Container"
 import { DATETIME_FORMAT, DateTimeUtility } from "@/common/utilities/DateTimeUtility"
+import { useState } from "react"
 
 const TransactionText = styled.span`
   display: inline-flex;
@@ -34,6 +34,7 @@ const TransactionSubText = styled.span`
 export default function Transactions() {
   const router = useRouter()
   const date = useSearchParams().get("date")
+  const [ isModalOpen, setIsModalOpen ] = useState(false)
 
   const { data: transactions, fetchNextPage, hasNextPage } = useInfiniteQuery({
     queryKey: [TransactionApi.QUERY_KEYS.GET_SLICE, date],
@@ -43,11 +44,7 @@ export default function Transactions() {
         pageSize: 30,
         ...(date !== null && { date: date }),
       })
-      if (!response.isSuccessAndHasData()) {
-        alert(response.message)
-        return
-      }
-      return response.data as TransactionGetSliceResponse
+      return response.validateAndGetData()
     },
     initialPageParam: 1,
     getNextPageParam: (lastPage, allPages) => {
@@ -60,23 +57,13 @@ export default function Transactions() {
       <Header>
         <BackButton url="/accountbook"/>
         <Title title="내역"/>
-        {transactions && QueryUtility.isInfiniteLoaded(transactions) && (
-          <div style={{ width: "33%", height: "100%", fontSize: "14px" }}>시작일: {transactions.pages[0]!.transactionStartDay}</div>
-        )}
+        <div style={{width: "33%", height: "100%"}}></div>
       </Header>
       <main>
         {transactions && QueryUtility.isInfiniteLoaded(transactions) && (<>
           <div
-            style={{
-              position: "sticky",
-              top: "50px",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              height: "35px",
-              fontSize: "14px",
-              background: "white",
-            }}
+            style={{position: "sticky", top: "50px", display: "flex", justifyContent: "space-between", alignItems: "center", height: "35px",
+              fontSize: "14px", background: "white"}}
           >
             <Image
               src="/images/left-arrow.png"
@@ -89,7 +76,7 @@ export default function Transactions() {
               )}
               style={{position: "absolute", left: 0, width: "15px"}}
             />
-            <h1 style={{textAlign: "center", flexGrow: 1}}>
+            <h1 onClick={() => setIsModalOpen(!isModalOpen)} style={{textAlign: "center", flexGrow: 1}}>
               {dayjs(transactions.pages[0]!.transactionMonthlyRange[0]).format("YY.MM.DD")
                 + " ~ " + dayjs(transactions.pages[0]!.transactionMonthlyRange[1]).format("MM.DD")}
             </h1>

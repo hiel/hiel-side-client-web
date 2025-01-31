@@ -8,14 +8,11 @@ import { getSortedIncomeExpenseTypeExternal, IncomeExpenseType } from "@/account
 import { Controller, SubmitHandler, useForm } from "react-hook-form"
 import { useEffect } from "react"
 import _ from "lodash"
-import { AssetCategoryGetAllResponse } from "@/accountbook/apis/assetcategory/AssetCategoryApiDomains"
-import { TransactionCategoryGetAllResponse } from "@/accountbook/apis/transactioncategory/TransactionCategoryApiDomains"
 import "react-datepicker/dist/react-datepicker.css"
 import DatePicker from "react-datepicker"
 import { DateTimeUtility } from "@/common/utilities/DateTimeUtility"
 import SelectBox from "@/common/components/SelectBox"
 import RadioCard from "@/common/components/RadioCard"
-import ChckboxCard from "@/common/components/ChckboxCard"
 import { Button } from "@/components/ui/button"
 import InputBox from "@/common/components/InputBox"
 import styled from "styled-components"
@@ -27,8 +24,10 @@ import { StringUtility } from "@/common/utilities/StringUtility"
 import Header from "@/app/accountbook/header/Header"
 import BackButton from "@/app/accountbook/header/BackButton"
 import Title from "@/app/accountbook/header/Title"
-import Container from "@/app/accountbook/Container"
+import Container from "@/components/Container"
 import { MESSAGE } from "@/common/domains/Messages"
+import HielSwitch from "@/common/components/HielSwitch"
+import { Text } from "@chakra-ui/react"
 
 interface TransactionUpsertForm {
   price: string,
@@ -77,13 +76,7 @@ export default function TransactionDetail({ params }: { params: { id: string | u
   const { data: transactionCategories } = useQuery({
     queryKey: [TransactionCategoryApi.QUERY_KEYS.GET_ALL],
     queryFn: () => TransactionCategoryApi.getAll(),
-    select: (data) => {
-      if (!data.isSuccessAndHasData()) {
-        alert(data.message)
-        return
-      }
-      return (data.data as TransactionCategoryGetAllResponse).list
-    },
+    select: data => data.validateAndGetData()?.list,
   })
   useEffect(() => {
     const category = _.first(transactionCategories)
@@ -95,13 +88,7 @@ export default function TransactionDetail({ params }: { params: { id: string | u
   const { data: assetCategories } = useQuery({
     queryKey: [AssetCategoryApi.QUERY_KEYS.GET_ALL],
     queryFn: () => AssetCategoryApi.getAll(),
-    select: (data) => {
-      if (!data.isSuccessAndHasData()) {
-        alert(data.message)
-        return
-      }
-      return (data.data as AssetCategoryGetAllResponse).list
-    },
+    select: data => data.validateAndGetData()?.list,
   })
   useEffect(() => {
     const category = _.first(assetCategories)
@@ -113,13 +100,7 @@ export default function TransactionDetail({ params }: { params: { id: string | u
   const { data: transactionDetail } = useQuery({
     queryKey: [TransactionApi.QUERY_KEYS.GET_DETAIL, params.id],
     queryFn: () => TransactionApi.getDetail({ id: Number(params.id) }),
-    select: (data) => {
-      if (!data.isSuccessAndHasData()) {
-        alert(data.message)
-        return
-      }
-      return data.data
-    },
+    select: data => data.validateAndGetData(),
     enabled: pageType === "UPDATE",
   })
   useEffect(() => {
@@ -273,14 +254,15 @@ export default function TransactionDetail({ params }: { params: { id: string | u
             <RadioCard
               name="incomeExpenseType"
               items={_.map(getSortedIncomeExpenseTypeExternal(),
-                v => ({ label: v.name, value: String(v.type), styles: { color: v.color } }))}
-              control={ control }
+                v => ({label: v.name, value: String(v.type), styles: {color: v.color}}))}
+              control={control}
             />
           </InputContainer>
 
-          { incomeExpenseType === IncomeExpenseType.EXPENSE && (
-            <InputContainer>
-              <ChckboxCard name="isWaste" label="낭비" control={ control } />
+          {incomeExpenseType === IncomeExpenseType.EXPENSE && (
+            <InputContainer style={{display: "flex", justifyContent: "space-between", alignItems: "center", padding: "5px 10px"}}>
+              <Text style={{fontSize: "14px"}}>낭비</Text>
+              <HielSwitch name="isWaste" control={control} />
             </InputContainer>
           )}
 
@@ -292,8 +274,8 @@ export default function TransactionDetail({ params }: { params: { id: string | u
               marginBottom: "10px",
             }}
           >
-            <Button type="submit" style={{ width: "100%" }}>
-              { pageType === "REGISTER" ? "등록" : "수정" }
+            <Button type="submit" style={{width: "100%"}}>
+              {pageType === "REGISTER" ? "등록" : "수정"}
             </Button>
           </InputContainer>
         </form>

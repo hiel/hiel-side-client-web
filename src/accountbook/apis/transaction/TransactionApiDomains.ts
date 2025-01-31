@@ -54,7 +54,6 @@ export interface TransactionGetSliceRequest {
 export interface TransactionGetSliceResponse {
   slice: SliceResponseData<TransactionGetSliceResponseDetail>,
   transactionMonthlyRange: string[],
-  transactionStartDay: number,
 }
 
 interface TransactionGetSliceResponseDetail {

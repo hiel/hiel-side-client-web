@@ -20,6 +20,14 @@ export class ApiResponse<D = null> {
   isSuccessAndHasData(): boolean {
     return this.isSuccess() && ValidationUtility.hasValue(this.data)
   }
+
+  validateAndGetData() {
+    if (!this.isSuccessAndHasData()) {
+      alert(this.message)
+      return undefined
+    }
+    return this.data
+  }
 }
 
 export interface SliceResponseData<E> {

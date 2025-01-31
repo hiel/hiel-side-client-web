@@ -2,7 +2,6 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { TransactionCategoryApi } from "@/accountbook/apis/transactioncategory/TransactionCategoryApi"
-import { TransactionCategoryGetAllResponse } from "@/accountbook/apis/transactioncategory/TransactionCategoryApiDomains"
 import _ from "lodash"
 import BackButton from "@/app/accountbook/header/BackButton"
 import Title from "@/app/accountbook/header/Title"
@@ -11,8 +10,8 @@ import { useForm } from "react-hook-form"
 import { Input } from "@chakra-ui/react"
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
-import CategoryForm from "@/app/accountbook/transactioncategory/CategoryForm"
-import Container from "@/app/accountbook/Container"
+import TransactionCategoryForm from "@/app/accountbook/transactioncategory/TransactionCategoryForm"
+import Container from "@/components/Container"
 import { MESSAGE } from "@/common/domains/Messages"
 
 interface RegisterForm {
@@ -29,13 +28,7 @@ export default function TransactionCategory() {
   const { data: categories } = useQuery({
     queryKey: [TransactionCategoryApi.QUERY_KEYS.GET_ALL],
     queryFn: () => TransactionCategoryApi.getAll(),
-    select: (data) => {
-      if (!data.isSuccessAndHasData()) {
-        alert(data.message)
-        return
-      }
-      return (data.data as TransactionCategoryGetAllResponse).list
-    },
+    select: data => data.validateAndGetData()?.list,
   })
 
   const validate = (data: RegisterForm): boolean => {
@@ -76,7 +69,7 @@ export default function TransactionCategory() {
         <div style={{display: "flex", flexDirection: "column", gap: "8px"}}>
           {categories && (<>
             {_.map(categories, category => (
-              <CategoryForm category={ category } queryClient={ queryClient } key={ category.id } />
+              <TransactionCategoryForm category={ category } queryClient={ queryClient } key={ category.id } />
             ))}
           </>)}
           <form
