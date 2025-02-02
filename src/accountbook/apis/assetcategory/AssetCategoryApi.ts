@@ -1,7 +1,7 @@
 import { customApi } from "@/accountbook/apis/CustomApi"
 import { ApiResponse } from "@/common/apis/ApiDomains"
 import {
-  AssetCategoryDeleteRequest,
+  AssetCategoryDeactivateRequest,
   AssetCategoryGetAllResponse,
   AssetCategoryRegisterRequest,
   AssetCategoryUpdateRequest,
@@ -22,9 +22,9 @@ export class AssetCategoryApi {
     return await customApi.put({ url: `${this.URL_PREFIX}/${id}`, requestBody: { ...requestBody } })
   }
 
-  static async delete(request: AssetCategoryDeleteRequest) {
+  static async deactivate(request: AssetCategoryDeactivateRequest) {
     const { id, ...requestBody } = request
-    return await customApi.delete({ url: `${this.URL_PREFIX}/${id}`, requestBody: { ...requestBody } })
+    return await customApi.put({ url: `${this.URL_PREFIX}/${id}/deactivate`, requestBody: { ...requestBody } })
   }
 
   static async getAll(): Promise<ApiResponse<AssetCategoryGetAllResponse>> {

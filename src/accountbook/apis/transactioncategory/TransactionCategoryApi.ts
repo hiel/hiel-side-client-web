@@ -1,7 +1,7 @@
 import { customApi } from "@/accountbook/apis/CustomApi"
 import { ApiResponse } from "@/common/apis/ApiDomains"
 import {
-  TransactionCategoryDeleteRequest,
+  TransactionCategoryDeactivateRequest,
   TransactionCategoryGetAllResponse,
   TransactionCategoryRegisterRequest,
   TransactionCategoryUpdateRequest,
@@ -22,9 +22,9 @@ export class TransactionCategoryApi {
     return await customApi.put({ url: `${this.URL_PREFIX}/${id}`, requestBody: { ...requestBody } })
   }
 
-  static async delete(request: TransactionCategoryDeleteRequest) {
+  static async deactivate(request: TransactionCategoryDeactivateRequest) {
     const { id, ...requestBody } = request
-    return await customApi.delete({ url: `${this.URL_PREFIX}/${id}`, requestBody: { ...requestBody } })
+    return await customApi.put({ url: `${this.URL_PREFIX}/${id}/deactivate`, requestBody: { ...requestBody } })
   }
 
   static async getAll(): Promise<ApiResponse<TransactionCategoryGetAllResponse>> {

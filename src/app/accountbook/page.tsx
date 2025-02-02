@@ -2,7 +2,7 @@
 
 import AccountBookNavigation from "@/app/accountbook/AccountBookNavigation"
 import Header from "@/app/accountbook/header/Header"
-import { Image, Stack, Text } from "@chakra-ui/react"
+import { Box, Collapsible, Image, Stack, Text } from "@chakra-ui/react"
 import Container from "@/components/Container"
 import UserModal from "@/app/accountbook/UserModal"
 import { useEffect, useState } from "react"
@@ -10,12 +10,13 @@ import { useQuery } from "@tanstack/react-query"
 import { HomeApi } from "@/accountbook/apis/home/HomeApi"
 import TransactionStartDayFormModal from "@/app/accountbook/TransactionStartDayFormModal"
 import { VictoryPie } from "victory"
-import { ValidationUtility } from "@/common/utilities/ValidationUtility"
+import _ from "lodash"
+import { useRouter } from "next/navigation"
 
 export default function AccountBookHome() {
+  const router = useRouter()
   const [isUserModalOpen, setIsUserModalOpen] = useState(false)
   const [isStartDayModalOpen, setIsStartDayModalOpen] = useState(false)
-  const [hasBudget, setHasBudget] = useState(false)
   const [pieGraphData, setPieGraphData] = useState<{y: number;}[]>([])
   const [balance, setBalance] = useState<number>()
   const [totalExpense, setTotalExpense] = useState<number>()
@@ -28,8 +29,6 @@ export default function AccountBookHome() {
 
   useEffect(() => {
     if (!home) { return }
-    setHasBudget(home.budget !== null && home.balance !== null)
-
     if (home?.budget && home?.balance) {
       setPieGraphData([
         { y: (home.totalExpense / home.budget) },
@@ -56,7 +55,7 @@ export default function AccountBookHome() {
         </Header>
         {home && (
           <main>
-            {hasBudget && (<>
+            {(pieGraphData && balance !== undefined && totalExpense !== undefined) && (<div>
               <svg viewBox="0 0 400 200" style={{marginBottom: "10px"}}>
                 <VictoryPie
                   standalone={false}
@@ -74,7 +73,19 @@ export default function AccountBookHome() {
                 <Text style={{fontSize: "14px"}}>잔액 {balance!.toLocaleString("ko")}원</Text>
                 <Text style={{fontSize: "14px"}}>지출 {totalExpense!.toLocaleString("ko")}원</Text>
               </Stack>
-            </>)}
+            </div>)}
+            {!_.isEmpty(home.assetCategories) && (
+              <Collapsible.Root>
+                <Collapsible.Trigger>자산별</Collapsible.Trigger>
+                <Collapsible.Content onClick={() => router.push("/accountbook/assetcategory")}>
+                  {_.map(home.assetCategories, category => (
+                    <Box>
+                      {category.name}
+                    </Box>
+                  ))}
+                </Collapsible.Content>
+              </Collapsible.Root>
+            )}
           </main>
         )}
       </Container>

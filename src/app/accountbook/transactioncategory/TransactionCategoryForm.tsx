@@ -51,7 +51,7 @@ export default function TransactionCategoryForm(
     deleteMutation.mutate(data)
   }
   const deleteMutation = useMutation({
-    mutationFn: (data: UpdateDeleteForm) => TransactionCategoryApi.delete(data),
+    mutationFn: (data: UpdateDeleteForm) => TransactionCategoryApi.deactivate(data),
     onSuccess: (data) => {
       if (!data.isSuccess()) {
         alert(data.message)

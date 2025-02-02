@@ -9,7 +9,7 @@ export interface AssetCategoryUpdateRequest {
   budgetPrice?: number | null,
 }
 
-export interface AssetCategoryDeleteRequest {
+export interface AssetCategoryDeactivateRequest {
   id: number,
 }
 

@@ -7,7 +7,7 @@ export interface TransactionCategoryUpdateRequest {
   name: string,
 }
 
-export interface TransactionCategoryDeleteRequest {
+export interface TransactionCategoryDeactivateRequest {
   id: number,
 }
 

@@ -52,7 +52,7 @@ export default function AssetCategoryForm(
     deleteMutation.mutate(data)
   }
   const deleteMutation = useMutation({
-    mutationFn: (data: UpdateDeleteForm) => AssetCategoryApi.delete(data),
+    mutationFn: (data: UpdateDeleteForm) => AssetCategoryApi.deactivate(data),
     onSuccess: (data) => {
       if (!data.isSuccess()) {
         alert(data.message)
