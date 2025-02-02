@@ -1,5 +1,6 @@
 import { SliceResponseData } from "@/common/apis/ApiDomains"
 import { IncomeExpenseType } from "@/accountbook/domains/IncomeExpenseType"
+import { Range } from "@/common/domains/Range"
 
 export interface TransactionRegisterRequest {
   title: string,
@@ -52,7 +53,7 @@ export interface TransactionGetSliceRequest {
 
 export interface TransactionGetSliceResponse {
   slice: SliceResponseData<TransactionGetSliceResponseDetail>,
-  transactionMonthlyRange: string[],
+  transactionMonthlyRange: Range<Date>,
 }
 
 interface TransactionGetSliceResponseDetail {

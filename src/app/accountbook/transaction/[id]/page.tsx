@@ -17,7 +17,11 @@ import { Button } from "@/components/ui/button"
 import InputBox from "@/common/components/InputBox"
 import styled from "styled-components"
 import { TransactionApi } from "@/accountbook/apis/transaction/TransactionApi"
-import { TransactionRegisterRequest, TransactionUpdateRequest } from "@/accountbook/apis/transaction/TransactionApiDomains"
+import {
+  TransactionGetDetailResponse,
+  TransactionRegisterRequest,
+  TransactionUpdateRequest,
+} from "@/accountbook/apis/transaction/TransactionApiDomains"
 import { useRouter } from "next/navigation"
 import ErrorMessage from "@/app/accountbook/transaction/[id]/ErrorMessage"
 import { StringUtility } from "@/common/utilities/StringUtility"
@@ -27,7 +31,10 @@ import Title from "@/app/accountbook/header/Title"
 import Container from "@/components/Container"
 import { MESSAGE } from "@/common/domains/Messages"
 import HielSwitch from "@/common/components/HielSwitch"
-import { Text } from "@chakra-ui/react"
+import { Box, Text } from "@chakra-ui/react"
+import { TransactionCategoryGetAllResponseDetail } from "@/accountbook/apis/transactioncategory/TransactionCategoryApiDomains"
+import { AssetCategoryGetAllResponseDetail } from "@/accountbook/apis/assetcategory/AssetCategoryApiDomains"
+import { ValidationUtility } from "@/common/utilities/ValidationUtility"
 
 interface TransactionUpsertForm {
   price: string,
@@ -73,7 +80,7 @@ export default function TransactionDetail({params}: {params: {id: string | undef
 
   const incomeExpenseType = watch("incomeExpenseType")
 
-  const {data: transactionCategories} = useQuery({
+  const {data: transactionCategories}: {data: TransactionCategoryGetAllResponseDetail[] | undefined} = useQuery({
     queryKey: [TransactionCategoryApi.QUERY_KEYS.GET_ALL],
     queryFn: () => TransactionCategoryApi.getAll(),
     select: data => data.validateAndGetData()?.list,
@@ -85,7 +92,7 @@ export default function TransactionDetail({params}: {params: {id: string | undef
     }
   }, [transactionCategories, resetField])
 
-  const {data: assetCategories} = useQuery({
+  const {data: assetCategories}: {data: AssetCategoryGetAllResponseDetail[] | undefined} = useQuery({
     queryKey: [AssetCategoryApi.QUERY_KEYS.GET_ALL],
     queryFn: () => AssetCategoryApi.getAll(),
     select: data => data.validateAndGetData()?.list,
@@ -97,7 +104,7 @@ export default function TransactionDetail({params}: {params: {id: string | undef
     }
   }, [assetCategories, resetField])
 
-  const {data: transactionDetail} = useQuery({
+  const {data: transactionDetail}: {data: TransactionGetDetailResponse | undefined} = useQuery({
     queryKey: [TransactionApi.QUERY_KEYS.GET_DETAIL, params.id],
     queryFn: () => TransactionApi.getDetail({id: Number(params.id)}),
     select: data => data.validateAndGetData(),
@@ -125,6 +132,10 @@ export default function TransactionDetail({params}: {params: {id: string | undef
     if (StringUtility.isBlank(data.title)) {
       isValid = false
       setError("title", {type: "required", message: MESSAGE.getMessage(MESSAGE.TRANSACTION.INPUT_REQUIRED_TITLE)})
+    }
+    if (ValidationUtility.hasNotValue(data.assetCategoryId) || ValidationUtility.hasNotValue(data.transactionCategoryId)) {
+      isValid = false
+      alert(MESSAGE.getMessage(MESSAGE.TRANSACTION.SELECT_CATEGORY))
     }
     return isValid
   }
@@ -167,36 +178,32 @@ export default function TransactionDetail({params}: {params: {id: string | undef
   })
 
   return (
-    <Container>
-      <Header>
+    <Container backgroundColor={"white"}>
+      <Header backgroundColor={"white"}>
         <BackButton />
         <Title title={pageType === "REGISTER" ? "내역 등록" : "내역 수정"} />
-        <div style={{width: "33%", height: "100%"}}></div>
+        <Box style={{width: "33%", height: "calc(100% - 20px)"}}></Box>
       </Header>
       <main>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <InputContainer style={{marginTop: "10px"}}>
+          <InputContainer>
             <InputBox name="price" type="number" label="금액" control={control} />
-            <ErrorMessage message={errors.price?.message}/>
+            <ErrorMessage message={errors.price?.message} />
           </InputContainer>
 
           <InputContainer>
             <InputBox name="title" type="text" label="내역" control={control} />
-            <ErrorMessage message={errors.title?.message}/>
+            <ErrorMessage message={errors.title?.message} />
           </InputContainer>
 
           <InputContainer>
             <Controller
               name="transactionDate"
               control={control}
-              render={({field: {value, onChange}}) => (
-                <DatePicker
-                  selected={dayjs(value).toDate()}
-                  onChange={v => onChange(DateTimeUtility.toString({dayjs: dayjs(v)}))}
-                  maxDate={dayjs().add(1, "month").endOf("month").toDate()}
-                  dateFormat="yyyy. MM. dd"
-                />
-              )}
+              render={({field: {value, onChange}}) => (<DatePicker
+                selected={dayjs(value).toDate()} onChange={v => onChange(DateTimeUtility.toString({dayjs: dayjs(v)}))}
+                maxDate={dayjs().add(1, "month").endOf("month").toDate()} dateFormat="yyyy. MM. dd"
+              />)}
             />
           </InputContainer>
 
@@ -204,21 +211,20 @@ export default function TransactionDetail({params}: {params: {id: string | undef
             <InputContainer style={{display: "flex", gap: "10px"}}>
               <SelectBox
                 name="transactionCategoryId"
-                items={_.map(
-                  (pageType === "UPDATE" && transactionDetail)
-                    ? _.uniqBy(
-                      _.concat({
-                        id: transactionDetail.transactionCategoryId,
-                        name: transactionDetail.transactionCategoryName,
-                      }, transactionCategories),
-                      "id",
-                    )
-                    : transactionCategories,
-                  v => ({label: v.name, value: v.id}),
-                )}
                 placeholder="내역 타입을 등록해주세요"
-                wrapperStyles={{flex: 1}}
+                wrapperStyles={{ flex: 1 }}
+                disabled={pageType === "REGISTER" && transactionCategories.length === 0}
                 control={control}
+                items={_.map(
+                  (pageType === "UPDATE" && transactionDetail) ? _.uniqBy(
+                    _.concat(
+                      {id: transactionDetail.transactionCategoryId, name: transactionDetail.transactionCategoryName},
+                      transactionCategories,
+                    ),
+                    "id",
+                  ) : transactionCategories,
+                  v => ({ label: v.name, value: v.id }),
+                )}
               />
               <Button onClick={() => router.push("/accountbook/transactioncategory")} style={{width: "50px"}}>관리</Button>
             </InputContainer>
@@ -228,6 +234,10 @@ export default function TransactionDetail({params}: {params: {id: string | undef
             <InputContainer style={{display: "flex", gap: "10px"}}>
               <SelectBox
                 name="assetCategoryId"
+                placeholder="자산 타입을 등록해주세요"
+                wrapperStyles={{ flex: 1 }}
+                disabled={pageType === "REGISTER" && assetCategories.length === 0}
+                control={control}
                 items={_.map(
                   (pageType === "UPDATE" && transactionDetail)
                     ? _.uniqBy(
@@ -238,11 +248,8 @@ export default function TransactionDetail({params}: {params: {id: string | undef
                       }, assetCategories),
                       "id",
                     ) : assetCategories,
-                  v => ({label: v.name, value: v.id}),
+                  v => ({ label: v.name, value: v.id }),
                 )}
-                placeholder="자산 타입을 등록해주세요"
-                wrapperStyles={{flex: 1}}
-                control={control}
               />
               <Button onClick={() => router.push("/accountbook/assetcategory")} style={{width: "50px"}}>관리</Button>
             </InputContainer>
@@ -250,10 +257,9 @@ export default function TransactionDetail({params}: {params: {id: string | undef
 
           <InputContainer>
             <RadioCard
-              name="incomeExpenseType"
+              name="incomeExpenseType" control={control}
               items={_.map(getSortedIncomeExpenseTypeExternal(),
                 v => ({label: v.name, value: String(v.type), styles: {color: v.color}}))}
-              control={control}
             />
           </InputContainer>
 
@@ -264,14 +270,7 @@ export default function TransactionDetail({params}: {params: {id: string | undef
             </InputContainer>
           )}
 
-          <InputContainer
-            style={{
-              position: "fixed",
-              bottom: 0,
-              width: "calc(100% - 20px)",
-              marginBottom: "10px",
-            }}
-          >
+          <InputContainer style={{position: "fixed", bottom: 0, width: "calc(100% - 20px)", marginBottom: "10px"}}>
             <Button type="submit" style={{width: "100%"}}>
               {pageType === "REGISTER" ? "등록" : "수정"}
             </Button>

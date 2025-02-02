@@ -1,13 +1,14 @@
 "use client"
 
 import { useIsFetching } from "@tanstack/react-query"
+import { Box } from "@chakra-ui/react"
 
 export default function LoadSpinner() {
   const isFetching = useIsFetching()
 
   return (<>
     { isFetching !== 0 && (
-      <div
+      <Box
         style={{
           position: "fixed",
           top: 0,
@@ -17,7 +18,7 @@ export default function LoadSpinner() {
           backgroundColor: "red",
           opacity: 0.2,
         }}
-      >isLoading</div>
+      >isLoading</Box>
     )}
   </>)
 }

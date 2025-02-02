@@ -1,7 +1,6 @@
 import axios, { AxiosInstance, AxiosResponse } from "axios"
 import { ApiResponse } from "@/common/apis/ApiDomains"
 import { DATETIME_FORMAT, DateTimeUtility } from "@/common/utilities/DateTimeUtility"
-import _ from "lodash"
 import dayjs from "dayjs"
 
 type RequestDataType = number | string | boolean | null | Date
@@ -111,26 +110,35 @@ export class Api {
         }
       })
     }
+
     if (queryParams) {
-      queryParams = _.reduce(queryParams, (result, value, key) => {
-        result[key] = convertData(value)
-        return result
-      }, {} as RequestDataRecordType)
+      queryParams = Object.entries(queryParams)
+        .filter(([, value]) => value !== undefined)
+        .reduce((result, [key, value]) => {
+          result[key] = convertData(value)
+          return result
+        }, {} as RequestDataRecordType)
     }
 
     let formData: FormData | undefined
     if (requestBody || files) {
       formData = new FormData()
     }
+
     if (requestBody) {
-      Object.entries(requestBody).forEach(([key, value]) => {
-        formData!.append(key, convertData(value))
-      })
+      Object.entries(requestBody)
+        .filter(([, value]) => value !== undefined)
+        .forEach(([key, value]) => {
+          formData!.append(key, convertData(value))
+        })
     }
+
     if (files) {
-      Object.entries(files).forEach(([key, value]) => {
-        formData!.append(key, value)
-      })
+      Object.entries(files)
+        .filter(([, value]) => value !== undefined)
+        .forEach(([key, value]) => {
+          formData!.append(key, value)
+        })
     }
 
     const axiosResponse: AxiosResponse<ApiResponse<T>> = await this.axiosInstance({

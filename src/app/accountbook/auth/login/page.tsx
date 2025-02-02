@@ -13,7 +13,7 @@ import Container from "@/components/Container"
 import BackButton from "@/app/accountbook/header/BackButton"
 import Title from "@/app/accountbook/header/Title"
 import Header from "@/app/accountbook/header/Header"
-import { Input } from "@chakra-ui/react"
+import { Box, Input } from "@chakra-ui/react"
 import ErrorMessage from "@/app/accountbook/transaction/[id]/ErrorMessage"
 import { Button } from "@/components/ui/button"
 
@@ -64,7 +64,7 @@ export default function AccountBookLogin() {
       <Header>
         <BackButton url="/accountbook/auth" />
         <Title title="로그인" />
-        <div style={{width: "33%", height: "100%"}}></div>
+        <Box style={{width: "33%", height: "100%"}}></Box>
       </Header>
 
       <main>

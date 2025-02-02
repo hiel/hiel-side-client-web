@@ -1,5 +1,7 @@
+import { Range } from "@/common/domains/Range"
+
 export interface HomeGetResponse {
-  budget?: number,
+  transactionMonthlyRange: Range<Date>,
   totalExpense: number,
   balance?: number,
   availableExpensePricePerDay?: number,
@@ -9,7 +11,7 @@ export interface HomeGetResponse {
   wastedPrice: number,
 }
 
-interface HomeGetResponseAssetCategoryDetail {
+export interface HomeGetResponseAssetCategoryDetail {
   id: number,
   name: string,
   budget?: number,

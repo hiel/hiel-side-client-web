@@ -10,7 +10,7 @@ import Container from "@/components/Container"
 import Header from "@/app/accountbook/header/Header"
 import BackButton from "@/app/accountbook/header/BackButton"
 import Title from "@/app/accountbook/header/Title"
-import { Input } from "@chakra-ui/react"
+import { Box, Input } from "@chakra-ui/react"
 import ErrorMessage from "@/app/accountbook/transaction/[id]/ErrorMessage"
 import { Button } from "@/components/ui/button"
 
@@ -51,7 +51,7 @@ export default function AccountBookRequestPasswordReset() {
       <Header>
         <BackButton url="/accountbook/auth" />
         <Title title="비밀번호 초기화" />
-        <div style={{width: "33%", height: "100%"}}></div>
+        <Box style={{width: "33%", height: "100%"}}></Box>
       </Header>
 
       <main>

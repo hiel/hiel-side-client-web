@@ -17,33 +17,19 @@ const NavItemLink = styled(Link)`
 `
 
 export default function AccountBookNavigation() {
-  return (
-    <nav
-      style={{
-        position: "fixed",
-        bottom: 0,
-        width: "100%",
-        height: "50px",
-        background: "#000000",
-      }}
-    >
-      <ul
-        style={{
-          display: "flex",
-          width: "100%",
-          height: "100%",
-        }}
-      >
+  return (<>
+    <nav style={{position: "fixed", bottom: 0, width: "100%", height: "50px", background: "#000000"}}>
+      <ul style={{display: "flex", width: "100%", height: "100%"}}>
         <NavItem>
-          <NavItemLink href={ "/accountbook" }>홈</NavItemLink>
+          <NavItemLink href={"/accountbook"}>홈</NavItemLink>
         </NavItem>
         <NavItem>
-          <NavItemLink href={ "/accountbook/transaction/register" }>등록</NavItemLink>
+          <NavItemLink href={"/accountbook/transaction/register"}>등록</NavItemLink>
         </NavItem>
         <NavItem>
-          <NavItemLink href={ "/accountbook/transaction" }>내역</NavItemLink>
+          <NavItemLink href={"/accountbook/transaction"}>내역</NavItemLink>
         </NavItem>
       </ul>
     </nav>
-  )
+  </>)
 }

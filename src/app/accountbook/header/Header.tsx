@@ -1,23 +1,33 @@
 import { ReactNode } from "react"
+import { Box } from "@chakra-ui/react"
 
-export default function Header({ children }: Readonly<{ children: ReactNode }>) {
-  return ( <>
+export default function Header({children, backgroundColor = "var(--color-background)"}:
+  Readonly<{children: ReactNode, backgroundColor?: "var(--color-background)" | "white"}>
+) {
+  return (<>
     <header
       style={{
         position: "fixed",
         top: 0,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
         width: "calc(100% - 20px)",
-        height: "30px",
-        margin: "10px 0",
+        height: "50px",
         background: "white",
         zIndex: 9999,
+        backgroundColor: backgroundColor,
       }}
     >
-      { children }
+      <Box
+        style={{
+          margin: "10px 0",
+          width: "100%",
+          height: "30px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        {children}
+      </Box>
     </header>
-    <div style={{ height: "calc(30px + 10px)" }}></div>
-  </> )
+  </>)
 }

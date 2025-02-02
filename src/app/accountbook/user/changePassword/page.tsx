@@ -8,7 +8,7 @@ import { useMutation } from "@tanstack/react-query"
 import Header from "@/app/accountbook/header/Header"
 import BackButton from "@/app/accountbook/header/BackButton"
 import Title from "@/app/accountbook/header/Title"
-import { Input } from "@chakra-ui/react"
+import { Box, Input } from "@chakra-ui/react"
 import ErrorMessage from "@/app/accountbook/transaction/[id]/ErrorMessage"
 import { Button } from "@/components/ui/button"
 import Container from "@/components/Container"
@@ -76,7 +76,7 @@ export default function AccountBookChangePassword() {
       <Header>
         <BackButton />
         <Title title="비밀번호 변경" />
-        <div style={{width: "33%", height: "100%"}}></div>
+        <Box style={{width: "33%", height: "100%"}}></Box>
       </Header>
       <main>
         <form onSubmit={handleSubmit(onSubmit)}>

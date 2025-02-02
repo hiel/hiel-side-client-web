@@ -1,16 +1,19 @@
-import { AssetCategoryGetAllResponseDetail } from "@/accountbook/apis/assetcategory/AssetCategoryApiDomains"
+import {
+  AssetCategoryDeactivateRequest,
+  AssetCategoryGetAllResponseDetail,
+  AssetCategoryUpdateRequest,
+} from "@/accountbook/apis/assetcategory/AssetCategoryApiDomains"
 import { QueryClient, useMutation } from "@tanstack/react-query"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { AssetCategoryApi } from "@/accountbook/apis/assetcategory/AssetCategoryApi"
-import { Input } from "@chakra-ui/react"
 import { Button } from "@/components/ui/button"
 import { MESSAGE } from "@/common/domains/Messages"
+import InputBox from "@/common/components/InputBox"
+import { Box } from "@chakra-ui/react"
 
-interface UpdateDeleteForm {
-  id: number,
-  name: string,
-  budgetPrice: number | null,
+function toFormData(data: AssetCategoryGetAllResponseDetail) {
+  return { ...data, budgetPrice: data.budgetPrice === null ? undefined : data.budgetPrice }
 }
 
 export default function AssetCategoryForm(
@@ -18,12 +21,12 @@ export default function AssetCategoryForm(
 ) {
   const [ isFocus, setIsFocus ] = useState(false)
   const [ isButtonClicked, setIsButtonClicked ] = useState(false)
-  const { register, handleSubmit, reset } = useForm<UpdateDeleteForm>({
+  const { control, handleSubmit, reset } = useForm<AssetCategoryUpdateRequest>({
     mode: "onChange",
-    defaultValues: { ...category },
+    defaultValues: toFormData(category),
   })
 
-  const validate = (data: UpdateDeleteForm): boolean => {
+  const validate = (data: AssetCategoryUpdateRequest): boolean => {
     let isValid = true
     if (!data.name) {
       isValid = false
@@ -31,12 +34,12 @@ export default function AssetCategoryForm(
     }
     return isValid
   }
-  const onUpdateSubmit = (data: UpdateDeleteForm) => {
+  const onUpdateSubmit = (data: AssetCategoryUpdateRequest) => {
     if (!validate(data)) { return }
     updateMutation.mutate(data)
   }
   const updateMutation = useMutation({
-    mutationFn: (data: UpdateDeleteForm) => AssetCategoryApi.update(data),
+    mutationFn: (data: AssetCategoryUpdateRequest) => AssetCategoryApi.update(data),
     onSuccess: (data) => {
       if (!data.isSuccess()) {
         alert(data.message)
@@ -48,11 +51,11 @@ export default function AssetCategoryForm(
     },
   })
 
-  const onDeleteSubmit = (data: UpdateDeleteForm) => {
+  const onDeleteSubmit = (data: AssetCategoryDeactivateRequest) => {
     deleteMutation.mutate(data)
   }
   const deleteMutation = useMutation({
-    mutationFn: (data: UpdateDeleteForm) => AssetCategoryApi.deactivate(data),
+    mutationFn: (data: AssetCategoryDeactivateRequest) => AssetCategoryApi.deactivate(data),
     onSuccess: (data) => {
       if (!data.isSuccess()) {
         alert(data.message)
@@ -70,29 +73,18 @@ export default function AssetCategoryForm(
       onBlur={e => {
         if (!e.currentTarget.contains(e.relatedTarget as Node) && !isButtonClicked) {
           setIsFocus(false)
-          reset(category)
+          reset(toFormData(category))
         }
       }}
       style={{flex: 1}}
     >
-      <Input
-        type="text"
-        {...register("name")}
-        style={{textAlign: "center"}}
-        autoComplete="off"
-      />
+      <InputBox name="name" type="text" control={control} label={"이름"} styles={{textAlign: "center"}} />
       {isFocus && (<>
-        <div style={{display: "flex", alignItems: "center", marginTop: "8px"}}>
+        <Box style={{display: "flex", alignItems: "center", marginTop: "8px"}}>
           <span style={{width: "20%", minWidth: "40px", textAlign: "center", fontSize: "14px"}}>예산</span>
-          <Input
-            type="text"
-            {...register("budgetPrice")}
-            placeholder="선택 입력"
-            style={{flex: 1, textAlign: "center"}}
-            autoComplete="off"
-          />
-        </div>
-        <div onMouseDown={() => setIsButtonClicked(true)} style={{display: "flex", gap: "10px", marginTop: "8px"}}>
+          <InputBox name={"budgetPrice"} control={control} type={"text"} label={"선택 입력"} styles={{flex: 1, textAlign: "center"}} />
+        </Box>
+        <Box onMouseDown={() => setIsButtonClicked(true)} style={{display: "flex", gap: "10px", marginTop: "8px"}}>
           <Button
             onClick={handleSubmit(f => onUpdateSubmit(f))}
             style={{flex: 1}}
@@ -101,7 +93,7 @@ export default function AssetCategoryForm(
             onClick={handleSubmit(f => onDeleteSubmit(f))}
             style={{flex: 1, backgroundColor: "#C54C4C"}}
           >삭제</Button>
-        </div>
+        </Box>
       </>)}
     </form>
   )

@@ -5,23 +5,16 @@ import LoadSpinner from "@/common/components/LoadSpinner"
 import AuthProvider from "@/common/providers/AuthProvider"
 import { Provider } from "@/components/ui/provider"
 import QueryProvider from "@/common/providers/QueryProvider"
-import type { Metadata } from "next"
+import { Box } from "@chakra-ui/react"
 
-export const metadata: Metadata = {
-  title: "accountbook",
-  description: "accountbook",
-}
-
-export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
+export default function AccountBookRootLayout({children}: Readonly<{children: ReactNode}>) {
   return (
     <html lang="ko">
       <body>
         <QueryProvider>
           <AuthProvider>
             <Provider defaultTheme={"light"}>
-              <div suppressHydrationWarning style={{ width: "100%" }}>
-                <div>{ children }</div>
-              </div>
+              <Box suppressHydrationWarning style={{width: "100%"}}>{children}</Box>
               <LoadSpinner />
             </Provider>
           </AuthProvider>

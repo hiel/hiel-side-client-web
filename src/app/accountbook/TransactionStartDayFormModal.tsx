@@ -1,6 +1,6 @@
 import ReactModal from "react-modal"
 import { Input, Text } from "@chakra-ui/react"
-import { UpdateTransactionStartDayRequest } from "@/accountbook/apis/user/UserApiDomains"
+import { GetUserResponse, UpdateTransactionStartDayRequest } from "@/accountbook/apis/user/UserApiDomains"
 import { useForm } from "react-hook-form"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { MESSAGE } from "@/common/domains/Messages"
@@ -13,7 +13,7 @@ export default function TransactionStartDayFormModal({isOpen, onClose}: {isOpen:
   const queryClient = useQueryClient()
   const {register, handleSubmit, reset} = useForm<UpdateTransactionStartDayRequest>({mode: "onChange"})
 
-  const {data: user} = useQuery({
+  const {data: user}: {data: GetUserResponse | undefined} = useQuery({
     queryKey: [UserApi.QUERY_KEYS.GET_USER],
     queryFn: () => UserApi.getUser(),
     select: data => data.validateAndGetData(),

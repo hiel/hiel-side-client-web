@@ -3,13 +3,14 @@
 import Container from "@/components/Container"
 import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
+import { Box } from "@chakra-ui/react"
 
 export default function Auth() {
   const router = useRouter()
 
   return (
     <Container>
-      <div style={{position: "absolute", bottom: "150px", width: "calc(100% - 20px)"}}>
+      <Box style={{position: "absolute", bottom: "150px", width: "calc(100% - 20px)"}}>
         <p>로고(TODO)</p>
         <Button
           onClick={() => router.push("/accountbook/auth/login")}
@@ -23,7 +24,7 @@ export default function Auth() {
           onClick={() => router.push("/accountbook/auth/signup")}
           style={{width: "100%", backgroundColor: "#FFFFFF", color: "black", border: "1px solid black"}}
         >회원가입</Button>
-      </div>
+      </Box>
     </Container>
   )
 }

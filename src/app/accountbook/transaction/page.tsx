@@ -11,12 +11,12 @@ import _ from "lodash"
 import BackButton from "@/app/accountbook/header/BackButton"
 import Title from "@/app/accountbook/header/Title"
 import Header from "@/app/accountbook/header/Header"
-import { Button, Image } from "@chakra-ui/react"
+import { Box, Button, Image } from "@chakra-ui/react"
 import { hasContent } from "@/common/apis/ApiDomains"
 import { useRouter, useSearchParams } from "next/navigation"
 import Container from "@/components/Container"
 import { DATETIME_FORMAT, DateTimeUtility } from "@/common/utilities/DateTimeUtility"
-import { useState } from "react"
+import { TransactionUtility } from "@/accountbook/utilities/TransactionUtility"
 
 const TransactionText = styled.span`
   display: inline-flex;
@@ -34,7 +34,6 @@ const TransactionSubText = styled.span`
 export default function Transactions() {
   const router = useRouter()
   const date = useSearchParams().get("date")
-  const [ isModalOpen, setIsModalOpen ] = useState(false)
 
   const { data: transactions, fetchNextPage, hasNextPage } = useInfiniteQuery({
     queryKey: [TransactionApi.QUERY_KEYS.GET_SLICE, date],
@@ -55,64 +54,68 @@ export default function Transactions() {
   return (
     <Container>
       <Header>
-        <BackButton url="/accountbook"/>
-        <Title title="내역"/>
-        <div style={{width: "33%", height: "100%"}}></div>
+        <BackButton url="/accountbook" />
+        <Title title="내역" />
+        <Box style={{width: "33%", height: "100%"}}></Box>
       </Header>
       <main>
         {transactions && QueryUtility.isInfiniteLoaded(transactions) && (<>
-          <div
-            style={{position: "sticky", top: "50px", display: "flex", justifyContent: "space-between", alignItems: "center", height: "35px",
-              fontSize: "14px", background: "white"}}
+          <Box
+            style={{
+              position: "sticky",
+              top: "50px",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "10px",
+              height: "35px",
+              fontSize: "14px",
+            }}
           >
             <Image
               src="/images/left-arrow.png"
+              style={{position: "absolute", left: 0, width: "15px"}}
               onClick={() => router.push(
                 "/accountbook/transaction?date="
                 + DateTimeUtility.toString({
-                  dayjs: DateTimeUtility.toDate(transactions.pages[0]!.transactionMonthlyRange[0]).subtract(1, "day"),
+                  dayjs: dayjs(transactions.pages[0]!.transactionMonthlyRange.start).subtract(1, "day"),
                   format: DATETIME_FORMAT.DATE,
                 })
               )}
-              style={{position: "absolute", left: 0, width: "15px"}}
             />
-            <h1 onClick={() => setIsModalOpen(!isModalOpen)} style={{textAlign: "center", flexGrow: 1}}>
-              {dayjs(transactions.pages[0]!.transactionMonthlyRange[0]).format("YY.MM.DD")
-                + " ~ " + dayjs(transactions.pages[0]!.transactionMonthlyRange[1]).format("MM.DD")}
+            <h1 style={{textAlign: "center", flexGrow: 1}}>
+              {DateTimeUtility.isBetween({ range: transactions.pages[0]!.transactionMonthlyRange })
+                ? "이번달" : TransactionUtility.toTransactionMonthlyRangeStr(transactions.pages[0]!.transactionMonthlyRange)}
             </h1>
             <Image
               src="/images/right-arrow.png"
+              style={{position: "absolute", right: 0, width: "15px"}}
               onClick={() => router.push(
                 "/accountbook/transaction?date="
                 + DateTimeUtility.toString({
-                  dayjs: DateTimeUtility.toDate(transactions.pages[0]!.transactionMonthlyRange[1]).add(1, "day"),
+                  dayjs: dayjs(transactions.pages[0]!.transactionMonthlyRange.end).add(1, "day"),
                   format: DATETIME_FORMAT.DATE,
                 })
               )}
-              style={{position: "absolute", right: 0, width: "15px"}}
             />
-          </div>
+          </Box>
 
           {hasContent(_.first(transactions.pages)!.slice) ? (
             <ul>
-              <InfiniteScroll
-                next={fetchNextPage}
-                hasMore={hasNextPage}
-                dataLength={transactions.pages.length}
-                loader={<></>}
-              >
+              <InfiniteScroll next={fetchNextPage} hasMore={hasNextPage} dataLength={transactions.pages.length} loader={<></>}>
                 {_.map(transactions.pages, page => page && (
                   _.map(page.slice.content, (transaction, index) => (
                     <li
                       onClick={() => router.push(`/accountbook/transaction/${transaction.id}`)}
                       style={{
                         marginBottom: "5px",
-                        padding: "10px",
-                        ...(index <= page.slice.content.length ? {borderBottom: "1px #D6D6D6 solid"} : {}),
+                        padding: "15px",
+                        backgroundColor: "white",
+                        borderRadius: "var(--border-radius)",
                       }}
                       key={index}
                     >
-                      <div style={{display: "flex"}}>
+                      <Box style={{display: "flex"}}>
                         <TransactionText style={{flex: 0.25}}>
                           {`${DateTimeUtility.toDate(transaction.date).month() + 1}.${DateTimeUtility.toDate(transaction.date).date()}`}
                         </TransactionText>
@@ -121,19 +124,19 @@ export default function Transactions() {
                           {(transaction.incomeExpenseType === IncomeExpenseType.INCOME ? "+" : "-")
                             + transaction.price.toLocaleString("ko")}
                         </TransactionText>
-                      </div>
-                      <div style={{display: "flex"}}>
+                      </Box>
+                      <Box style={{display: "flex"}}>
                         <TransactionSubText>{transaction.transactionCategoryName}</TransactionSubText>
                         <TransactionSubText>{transaction.assetCategoryName}</TransactionSubText>
                         <TransactionSubText>{transaction.isWaste ? "낭비" : ""}</TransactionSubText>
-                      </div>
+                      </Box>
                     </li>
                   ))
                 ))}
               </InfiniteScroll>
             </ul>
           ) : (
-            <div style={{ textAlign: "center", padding: "30px 0", color: "#A8A8A8", fontSize: "14px" }}>내역이 없습니다</div>
+            <Box style={{marginTop: "100px", textAlign: "center", padding: "30px 0", color: "#A8A8A8", fontSize: "14px"}}>내역이 없습니다</Box>
           )}
           <Button
             onClick={() => router.push("/accountbook/transaction/register")}

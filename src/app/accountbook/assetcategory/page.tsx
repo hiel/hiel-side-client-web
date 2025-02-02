@@ -6,13 +6,15 @@ import BackButton from "@/app/accountbook/header/BackButton"
 import Title from "@/app/accountbook/header/Title"
 import Header from "@/app/accountbook/header/Header"
 import { useForm } from "react-hook-form"
-import { Input } from "@chakra-ui/react"
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
 import AssetCategoryForm from "@/app/accountbook/assetcategory/AssetCategoryForm"
 import Container from "@/components/Container"
 import { MESSAGE } from "@/common/domains/Messages"
 import { AssetCategoryApi } from "@/accountbook/apis/assetcategory/AssetCategoryApi"
+import { AssetCategoryGetAllResponseDetail } from "@/accountbook/apis/assetcategory/AssetCategoryApiDomains"
+import InputBox from "@/common/components/InputBox"
+import { Box } from "@chakra-ui/react"
 
 interface RegisterForm {
   name: string,
@@ -21,11 +23,17 @@ interface RegisterForm {
 
 export default function AssetCategory() {
   const queryClient = useQueryClient()
-  const [ isFocus, setIsFocus ] = useState(false)
-  const [ isButtonClicked, setIsButtonClicked ] = useState(false)
-  const { register, handleSubmit, setValue } = useForm<RegisterForm>({ mode: "onChange" })
+  const [isFocus, setIsFocus] = useState(false)
+  const [isButtonClicked, setIsButtonClicked] = useState(false)
+  const {control, handleSubmit, setValue} = useForm<RegisterForm>({
+    mode: "onChange",
+    defaultValues: {
+      name: "",
+      budgetPrice: undefined,
+    },
+  })
 
-  const { data: categories } = useQuery({
+  const {data: categories}: {data: AssetCategoryGetAllResponseDetail[] | undefined} = useQuery({
     queryKey: [AssetCategoryApi.QUERY_KEYS.GET_ALL],
     queryFn: () => AssetCategoryApi.getAll(),
     select: data => data.validateAndGetData()?.list,
@@ -59,14 +67,14 @@ export default function AssetCategory() {
   })
 
   return (
-    <Container>
-      <Header>
+    <Container backgroundColor="white">
+      <Header backgroundColor="white">
         <BackButton />
         <Title title="자산 카테고리 관리" />
-        <div style={{width: "33%", height: "100%"}}></div>
+        <Box style={{ width: "33%", height: "100%" }}></Box>
       </Header>
-      <main style={{padding: "2px"}}>
-        <div style={{display: "flex", flexDirection: "column", gap: "8px"}}>
+      <Box style={{ marginTop: "10px" }}>
+        <Box style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
           {categories && (<>
             {_.map(categories, category => (
               <AssetCategoryForm category={category} queryClient={queryClient} key={category.id} />
@@ -81,35 +89,50 @@ export default function AssetCategory() {
                 setValue("budgetPrice", undefined)
               }
             }}
-            style={{flex: 1}}
+            style={{ flex: 1 }}
           >
-            <Input
+            <InputBox
+              name="name"
               type="text"
-              {...register("name")}
-              placeholder={isFocus ? "이름" : "추가"}
-              style={{textAlign: "center"}}
-              autoComplete="off"
+              control={ control }
+              label={ isFocus ? "이름" : "추가" }
+              styles={{ textAlign: "center" }}
             />
             {isFocus && (<>
-              <div style={{display: "flex", alignItems: "center", marginTop: "8px"}}>
-                <span style={{width: "20%", minWidth: "40px", textAlign: "center", fontSize: "14px"}}>예산</span>
-                <Input
+              <Box
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  marginTop: "8px",
+                }}
+              >
+                <span
+                  style={{
+                    width: "20%",
+                    minWidth: "40px",
+                    textAlign: "center",
+                    fontSize: "14px",
+                  }}
+                >
+                  예산
+                </span>
+                <InputBox
+                  name="budgetPrice"
                   type="text"
-                  {...register("budgetPrice")}
-                  placeholder="선택 입력"
-                  style={{flex: 1, textAlign: "center"}}
-                  autoComplete="off"
+                  control={ control }
+                  label="선택 입력"
+                  styles={{ flex: 1, textAlign: "center" }}
                 />
-              </div>
+              </Box>
               <Button
-                onMouseDown={() => setIsButtonClicked(true)}
-                onClick={handleSubmit(f => onRegisterSubmit(f))}
-                style={{marginTop: "8px", width: "100%"}}
+                onMouseDown={ () => setIsButtonClicked(true) }
+                onClick={ handleSubmit(f => onRegisterSubmit(f)) }
+                style={{ marginTop: "8px", width: "100%" }}
               >저장</Button>
             </>)}
           </form>
-        </div>
-      </main>
+        </Box>
+      </Box>
     </Container>
   )
 }

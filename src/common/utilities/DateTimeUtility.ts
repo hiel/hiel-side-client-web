@@ -1,4 +1,8 @@
 import dayjs, { Dayjs } from "dayjs"
+import { Range } from "@/common/domains/Range"
+import isBetween from "dayjs/plugin/isBetween"
+
+dayjs.extend(isBetween)
 
 export enum DATETIME_FORMAT {
   DATETIME = "YYYY-MM-DD HH:mm:ss",
@@ -17,5 +21,9 @@ export class DateTimeUtility {
 
   static secondToMillisecond(second: number): number {
     return second * 1000
+  }
+
+  static isBetween({ date = dayjs(), range }: { date?: Dayjs, range: Range<Date> }): boolean {
+    return date.isBetween(range.start, range.end)
   }
 }

@@ -23,6 +23,7 @@ export const MESSAGE = {
   TRANSACTION: {
     INPUT_REQUIRED_PRICE: "금액을 입력해주세요.",
     INPUT_REQUIRED_TITLE: "내역을 입력해주세요.",
+    SELECT_CATEGORY: "타입을 선택해주세요.",
   },
   getMessage: (messageTemplate: string, ...args: (string | number)[]) => {
     return messageTemplate.replace(/%s/g, () => {
