@@ -23,7 +23,6 @@ jobs:
       - run: |
           echo "NEXT_PUBLIC_ENVIRONMENT=development" >> .env.development
           echo "NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL" >> .env.development
-          echo "NEXT_PUBLIC_S3_BUCKET_URL=NEXT_PUBLIC_S3_BUCKET_URL" >> .env.development
         env:
           NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL_DEVELOP }}
       - uses: actions/cache@v4
@@ -36,16 +35,16 @@ jobs:
       - run: npm install
       - uses: webfactory/ssh-agent@v0.9.0
         with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY_CLIENT_DEVELOP }}
-      - run: ssh-keyscan ${{ secrets.SERVER_IP_CLIENT_DEVELOP }} >> ~/.ssh/known_hosts
-      - run: rsync -avz -e "ssh" . ${{ secrets.SSH_USER_CLIENT_DEVELOP }}@${{ secrets.SERVER_IP_CLIENT_DEVELOP }}:~/app/hiel-side-client-web
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY_DEVELOP }}
+      - run: ssh-keyscan ${{ secrets.SERVER_IP_DEVELOP }} >> ~/.ssh/known_hosts
+      - run: rsync -avz -e "ssh" . ${{ secrets.SSH_USER_DEVELOP }}@${{ secrets.SERVER_IP_DEVELOP }}:~/app/hiel-side-client-web
       - uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.SERVER_IP_CLIENT_DEVELOP }}
-          username: ${{ secrets.SSH_USER_CLIENT_DEVELOP }}
-          key: ${{ secrets.SSH_PRIVATE_KEY_CLIENT_DEVELOP }}
-          port: ${{ secrets.SERVER_CLIENT_PORT }}
+          host: ${{ secrets.SERVER_IP_DEVELOP }}
+          username: ${{ secrets.SSH_USER_DEVELOP }}
+          key: ${{ secrets.SSH_PRIVATE_KEY_DEVELOP }}
+          port: 22
           script: |
             cd ~/app/hiel-side-client-web
-            pm2 kill
-            pm2 start "npm run dev"
+            pm2 stop hiel-side-client-web
+            pm2 start "npm run dev" --name hiel-side-client-web
